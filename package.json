@@ -1,0 +1,9 @@
+{
+  "name": "wrp-netlify-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend proxy Netlify Functions untuk War Room Plantation (menggantikan Google Apps Script Web App)",
+  "dependencies": {
+    "googleapis": "^140.0.1"
+  }
+}

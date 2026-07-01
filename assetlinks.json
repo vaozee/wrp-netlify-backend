@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.vaozee.twa",
+        "sha256_cert_fingerprints": ["AC:D1:C7:47:B5:CB:46:29:17:19:9E:B4:CE:B2:EE:4D:68:02:A7:04:45:40:C4:A4:35:82:72:D3:E3:0F:5E:A6"]
+      }
+    }]
