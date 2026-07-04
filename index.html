@@ -2806,6 +2806,21 @@ function onPwAfdChange(){
 // Normalize row key helper (case insensitive)
 function rowGet(r, ...keys){ for(const k of keys){ if(r[k]!==undefined && r[k]!==null && r[k]!=='') return r[k]; } return ''; }
 function rowNum(r, ...keys){ const v=rowGet(r,...keys); if(v===''||v===null) return 0; const n=parseFloat(String(v).replace(/\./g,'').replace(',','.')); return isNaN(n)?0:n; }
+// Parser khusus untuk angka desimal seperti Luas (Ha) — TIDAK menghapus titik desimal seperti rowNum (yang diasumsikan untuk Rupiah/Kg format ribuan).
+// "23.45" -> 23.45 (titik = desimal, dibiarkan apa adanya)
+// "23,45" -> 23.45 (koma = desimal, dikonversi)
+// "1.234,56" -> 1234.56 (format Indonesia lengkap: titik ribuan + koma desimal)
+function rowNumDec(r, ...keys){
+  const v = rowGet(r, ...keys);
+  if(v===''||v===null) return 0;
+  if(typeof v === 'number') return v;
+  let s = String(v).trim().replace(/[^0-9.,\-]/g,'');
+  if(s.includes(',') && s.includes('.')) s = s.replace(/\./g,'').replace(',', '.');
+  else if(s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
+  // jika hanya titik (atau tanpa titik/koma), biarkan apa adanya — titik dianggap desimal
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
 
 async function loadPerawatan(){
   const el = document.getElementById('pw-content');
@@ -2998,26 +3013,37 @@ function renderPerawatan(){
     const byJenisPb = {};
     pb.forEach(r=>{
       const j = rowGet(r,'JENIS_PUPUK','jenis_pupuk','JENIS','jenis')||'Unknown';
-      if(!byJenisPb[j]) byJenisPb[j]={rekom:0,real2026:0,real2025:0,real2024:0};
+      if(!byJenisPb[j]) byJenisPb[j]={rekom:0,real2026:0,real2025:0,real2024:0,luas:0,populasi:0,rot1:0,rot2:0,rot3:0};
       byJenisPb[j].rekom    += rowNum(r,'REKOM_TOTAL_KG','rekom_total_kg','REKOM_TOTAL','rekom_total');
       byJenisPb[j].real2026 += rowNum(r,'REALISASI_KG_2026','realisasi_kg_2026');
       byJenisPb[j].real2025 += rowNum(r,'REALISASI_KG_2025','realisasi_kg_2025');
       byJenisPb[j].real2024 += rowNum(r,'REALISASI_KG_2024','realisasi_kg_2024');
+      byJenisPb[j].luas     += rowNumDec(r,'LUAS_(HA)','LUAS_HA','LUAS (HA)','LUAS','luas_(ha)','luas_ha','luas');
+      byJenisPb[j].populasi += rowNum(r,'POPULASI','populasi');
+      byJenisPb[j].rot1     += rowNum(r,'KG/_ROTASI_1','KG_ROTASI_1','KG/ROTASI_1','kg/_rotasi_1','rotasi_1');
+      byJenisPb[j].rot2     += rowNum(r,'KG/_ROTASI_2','KG_ROTASI_2','KG/ROTASI_2','kg/_rotasi_2','rotasi_2');
+      byJenisPb[j].rot3     += rowNum(r,'KG/_ROTASI_3','KG_ROTASI_3','KG/ROTASI_3','kg/_rotasi_3','rotasi_3');
     });
     const pbList = Object.entries(byJenisPb);
     html += `<div class="cc" style="margin-bottom:14px;"><div class="cc-t"><i class="fas fa-chart-column"></i> Rekom Total vs Realisasi 2024/2025/2026 per Jenis Pupuk</div><div id="ch-pupuk-blok"></div></div>
     <div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table-list"></i> Tabel Pemupukan Blok per Jenis</span></div>
       <div class="tw" style="max-height:300px;"><table class="tbl"><thead><tr>
-        <th>Jenis Pupuk</th><th>Rekom Total (Kg)</th><th>Realisasi 2026</th><th>Realisasi 2025</th><th>Realisasi 2024</th><th>Ach 2026 (%)</th>
+        <th>Luas (Ha)</th><th>Populasi</th><th>Jenis Pupuk</th><th>Rekom Total (Kg)</th><th>Kg/Rotasi 1</th><th>Kg/Rotasi 2</th><th>Kg/Rotasi 3</th><th>Realisasi 2026</th><th>Ach 2026 (%)</th><th>Realisasi 2025</th><th>Realisasi 2024</th>
       </tr></thead><tbody>
       ${pbList.map(([j,v])=>{
         const a26=v.rekom>0?(v.real2026/v.rekom*100):0;
-        return `<tr><td><b>${escHtml(j)}</b></td>
+        return `<tr>
+          <td>${v.luas?v.luas.toLocaleString('id-ID',{maximumFractionDigits:2}):'-'}</td>
+          <td>${v.populasi?Math.round(v.populasi).toLocaleString('id-ID'):'-'}</td>
+          <td><b>${escHtml(j)}</b></td>
           <td>${Math.round(v.rekom).toLocaleString('id-ID')}</td>
+          <td>${Math.round(v.rot1).toLocaleString('id-ID')}</td>
+          <td>${Math.round(v.rot2).toLocaleString('id-ID')}</td>
+          <td>${Math.round(v.rot3).toLocaleString('id-ID')}</td>
           <td>${Math.round(v.real2026).toLocaleString('id-ID')}</td>
+          <td class="${a26>=95?'g':a26>=80?'wd':'bd'}">${a26.toFixed(1)}%</td>
           <td>${Math.round(v.real2025).toLocaleString('id-ID')}</td>
-          <td>${Math.round(v.real2024).toLocaleString('id-ID')}</td>
-          <td class="${a26>=95?'g':a26>=80?'wd':'bd'}">${a26.toFixed(1)}%</td></tr>`;
+          <td>${Math.round(v.real2024).toLocaleString('id-ID')}</td></tr>`;
       }).join('')}
       </tbody></table></div></div>`;
   } else {
