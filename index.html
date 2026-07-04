@@ -6,6 +6,7 @@
 <title>War Room Plantation</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#071510">
+<script>(function(){try{var t=localStorage.getItem('wrp_theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
@@ -16,10 +17,54 @@
 <style>
 :root{
   --sb:#071510;--sb2:#0a1c12;--G:#22c55e;--GL:#16401f;
-  --Au:#d4af37;--T:#e8f5e9;--TL:#cfe8d6;
-  --BD:#1c3d26;--C1:#0f2a18;--C2:#0a1f12;--BG:#081a0e;
+  --Au:#d4af37;--Au-rgb:212,175,55;--T:#e8f5e9;--TL:#cfe8d6;
+  --BD:#1c3d26;--C1:#0f2a18;--C2:#0a1f12;--C3:#071510;--BG:#081a0e;
   --R:#ef4444;--Y:#f59e0b;--BL:#3b82f6;
 }
+/* Tema Ungu-Biru Vibrant (terinspirasi gradasi #6a11cb -> #2575fc) */
+html[data-theme="ungu"]{
+  --sb:#1c0a42;--sb2:#2a1160;--G:#22c55e;--GL:#3d1f80;
+  --Au:#a78bfa;--Au-rgb:167,139,250;--T:#f5f3ff;--TL:#d9d3f5;
+  --BD:#3d2b7a;--C1:#2a1160;--C2:#1c0a42;--C3:#150733;--BG:#1b0742;
+  --R:#ef4444;--Y:#f59e0b;--BL:#60a5fa;
+}
+html[data-theme="ungu"] body{background:linear-gradient(135deg,#4c1d95,#1e3a8a) fixed;}
+html[data-theme="ungu"] .cc,html[data-theme="ungu"] .kc,html[data-theme="ungu"] .fc,
+html[data-theme="ungu"] .pbar,html[data-theme="ungu"] .conn-bar{
+  background:rgba(255,255,255,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.14);
+}
+html[data-theme="ungu"] .sb{background:linear-gradient(180deg,var(--sb),var(--sb2));}
+/* Tema Terang (lebih cerah, latar putih) */
+html[data-theme="terang"]{
+  --sb:#ffffff;--sb2:#eef1f6;--G:#16a34a;--GL:#e6f4ea;
+  --Au:#b8860b;--Au-rgb:184,134,11;--T:#1a1f26;--TL:#5b6472;
+  --BD:#e2e5ea;--C1:#ffffff;--C2:#f7f8fa;--C3:#eef0f3;--BG:#f4f6f9;
+  --R:#dc2626;--Y:#d97706;--BL:#2563eb;
+}
+html[data-theme="terang"] .brand-name,
+html[data-theme="terang"] .nav-item:hover,
+html[data-theme="terang"] .nav-item.active,
+html[data-theme="terang"] .user-name,
+html[data-theme="terang"] .topbar h1,
+html[data-theme="terang"] .p-date,
+html[data-theme="terang"] .bx-main,
+html[data-theme="terang"] .sv,
+html[data-theme="terang"] .kv.w,
+html[data-theme="terang"] .kvl.w,
+html[data-theme="terang"] .login-title{color:#0f172a;}
+html[data-theme="terang"] .toast{background:#1f2937;color:#fff;border-color:var(--G);}
+html[data-theme="terang"] .sb,html[data-theme="terang"] .login-box,html[data-theme="terang"] .md{
+  box-shadow:0 4px 18px rgba(15,23,42,.08);
+}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.theme-swatch{cursor:pointer;border:2px solid transparent;border-radius:10px;padding:4px;transition:all .18s;}
+.theme-swatch:hover{border-color:var(--BD);}
+.theme-swatch.active{border-color:var(--G);}
+.theme-preview{height:44px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.theme-dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.25);}
+.theme-name{font-size:.6rem;color:var(--TL);text-align:center;margin-top:6px;opacity:.8;}
+.theme-swatch.active .theme-name{color:var(--G);font-weight:600;opacity:1;}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
 body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display:flex;}
@@ -41,7 +86,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 .nav-label{font-size:0.56rem;color:var(--Au);padding:9px 12px 3px;text-transform:uppercase;letter-spacing:1px;opacity:.6;white-space:nowrap;}
 .nav-item{display:flex;align-items:center;padding:9px 12px;color:var(--TL);font-family:'Poppins',sans-serif;font-size:0.74rem;transition:all .18s;border-left:3px solid transparent;cursor:pointer;gap:9px;user-select:none;white-space:nowrap;}
 .nav-item:hover{background:rgba(34,197,94,.12);border-left-color:var(--G);color:#fff;}
-.nav-item.active{background:linear-gradient(90deg,rgba(34,197,94,.26),rgba(212,175,55,.08));border-left-color:var(--Au);color:#fff;}
+.nav-item.active{background:linear-gradient(90deg,rgba(34,197,94,.26),rgba(var(--Au-rgb),.08));border-left-color:var(--Au);color:#fff;}
 .nav-item i{width:16px;text-align:center;font-size:0.8rem;color:var(--G);flex-shrink:0;}
 .nav-item.active i{color:var(--Au);}
 .nav-item.hidden-role{display:none !important;}
@@ -87,7 +132,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 .bdg-g{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:var(--G);}
 .bdg-r{background:var(--R);color:#fff;}
 .bdg-y{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);color:var(--Y);}
-.bdg-au{background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.4);color:var(--Au);}
+.bdg-au{background:rgba(var(--Au-rgb),.15);border:1px solid rgba(var(--Au-rgb),.4);color:var(--Au);}
 .abox{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.02));border:1px solid rgba(239,68,68,.35);border-radius:10px;padding:14px 17px;margin-bottom:16px;}
 .ybox{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.02));border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:14px 17px;margin-bottom:16px;}
 .gbox{background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.02));border:1px solid rgba(34,197,94,.35);border-radius:10px;padding:14px 17px;margin-bottom:16px;}
@@ -116,7 +161,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 .kc.fx{display:flex;align-items:flex-start;gap:10px;}
 .kico{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
 .kico.g{background:rgba(34,197,94,.15);color:var(--G);}
-.kico.au{background:rgba(212,175,55,.15);color:var(--Au);}
+.kico.au{background:rgba(var(--Au-rgb),.15);color:var(--Au);}
 .kico.r{background:rgba(239,68,68,.15);color:var(--R);}
 .kico.b{background:rgba(59,130,246,.15);color:var(--BL);}
 .kico.y{background:rgba(245,158,11,.15);color:var(--Y);}
@@ -180,7 +225,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 .tog.on::after{left:19.5px;}
 .mo{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;align-items:center;justify-content:center;}
 .mo.open{display:flex;}
-.md{background:linear-gradient(135deg,var(--C1),#071510);border:1px solid var(--BD);border-radius:12px;padding:22px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;}
+.md{background:linear-gradient(135deg,var(--C1),var(--C3));border:1px solid var(--BD);border-radius:12px;padding:22px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;}
 .md-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--BD);}
 .md-t{font-size:.95rem;font-weight:600;color:var(--Au);display:flex;align-items:center;gap:8px;}
 .md-t i{color:var(--G);}
@@ -205,7 +250,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 .spin{animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .login-wrap{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#0f2a18,#040d07 70%);display:flex;align-items:center;justify-content:center;z-index:1000;}
-.login-box{background:linear-gradient(135deg,var(--C1),#071510);border:1px solid var(--BD);border-radius:14px;padding:34px;width:380px;max-width:90vw;}
+.login-box{background:linear-gradient(135deg,var(--C1),var(--C3));border:1px solid var(--BD);border-radius:14px;padding:34px;width:380px;max-width:90vw;}
 .login-logo{width:110px;height:110px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
 .login-logo svg{width:100%;height:100%;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));}
 .login-title{text-align:center;font-family:'Montserrat',sans-serif;font-weight:700;color:#fff;font-size:1.1rem;margin-bottom:3px;}
@@ -305,6 +350,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
   </div>
   <nav>
     <a class="nav-item active" data-page="dashboard" onclick="go('dashboard',this)"><i class="fas fa-seedling"></i><span class="nav-text">Produksi</span></a>
+    <a class="nav-item" data-page="perkebun" onclick="go('perkebun',this)"><i class="fas fa-city"></i><span class="nav-text">Per Kebun</span></a>
     <a class="nav-item" data-page="perblok" onclick="go('perblok',this)"><i class="fas fa-map"></i><span class="nav-text">Per Blok</span></a>
     <a class="nav-item" data-page="import" data-role-restricted="1" onclick="go('import',this)"><i class="fas fa-file-import"></i><span class="nav-text">Import Produksi</span></a>
     <a class="nav-item" data-page="mblok" data-role-restricted="1" onclick="go('mblok',this)"><i class="fas fa-th-large"></i><span class="nav-text">Master Blok</span></a>
@@ -315,7 +361,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
     <a class="nav-item" data-page="perawatan" onclick="go('perawatan',this)"><i class="fas fa-leaf"></i><span class="nav-text">Perawatan</span></a>
     <a class="nav-item" data-page="audit" onclick="go('audit',this)"><i class="fas fa-shield-alt"></i><span class="nav-text">Audit Trail</span></a>
     <div class="nav-label">Sistem</div>
-    <a class="nav-item" data-page="settings" data-role-restricted="1" onclick="go('settings',this)"><i class="fas fa-cog"></i><span class="nav-text">Settings</span></a>
+    <a class="nav-item" data-page="settings" onclick="go('settings',this)"><i class="fas fa-cog"></i><span class="nav-text">Settings</span></a>
   </nav>
   <div class="sb-user">
     <div class="u-av" id="u-av">--</div>
@@ -360,12 +406,26 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
   <div class="pf">v2.1 Connected Edition · Google Sheets Backend</div>
 </section>
 
+<!-- PAGE: PER KEBUN -->
+<section class="pg" id="pg-perkebun">
+  <div class="topbar"><div class="tb-left"><button class="tog-sb" onclick="toggleSB()"><i class="fas fa-bars"></i></button><div><h1>Per Kebun</h1><p>Monitoring produksi TBS per Kebun dari Google Sheets "History Produksi"</p></div></div>
+  <div class="h-actions">
+    <select class="fsl" id="pk-tahun" style="width:90px;" onchange="loadPerKebun()"></select>
+    <select class="fsl" id="pk-bulan" style="width:130px;" onchange="loadPerKebun()"></select>
+    <select class="fsl" id="pk-kebun" style="width:130px;" onchange="onPkKebunChange()"><option value="">Semua Kebun</option></select>
+    <button class="btn btn-o" onclick="loadPerKebun()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <button class="btn btn-g" onclick="exportCSV(pkRows,'per_kebun')"><i class="fas fa-file-csv"></i> Export CSV</button>
+  </div></div>
+  <div class="conn-bar-slot"></div>
+  <div id="pk-content"><div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat data dari Google Sheets...</div></div>
+  <div class="pf">v2.1 Connected Edition · Google Sheets Backend</div>
+</section>
+
 <!-- PAGE: PER BLOK -->
 <section class="pg" id="pg-perblok">
   <div class="topbar"><div class="tb-left"><button class="tog-sb" onclick="toggleSB()"><i class="fas fa-bars"></i></button><div><h1>Per Blok</h1><p>Analisa produksi per blok dari sheet "perblok" History Produksi</p></div></div>
   <div class="h-actions">
     <select class="fsl" id="pb-tahun" style="width:90px;" onchange="loadPerblok()"></select>
-    <select class="fsl" id="pb-kebun" style="width:130px;" onchange="onPbKebunChange()"><option value="">Semua Kebun</option></select>
     <select class="fsl" id="pb-afd" style="width:110px;" onchange="onPbAfdChange()"><option value="">Semua AFD</option></select>
     <select class="fsl" id="pb-blok" style="width:115px;" onchange="renderPerblok()"><option value="">Semua Blok</option></select>
     <button class="btn btn-o" onclick="loadPerblok()"><i class="fas fa-sync-alt"></i> Refresh</button>
@@ -517,6 +577,29 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
       </div>
       <div class="fc"><div class="fc-t"><i class="fas fa-palette"></i> Tampilan</div>
         <div class="si"><div><div class="si-k">Sidebar Kompak</div><div class="si-s">Tampilan ikon saja</div></div><button class="tog" onclick="toggleSB();this.classList.toggle('on')"></button></div>
+        <div class="dvd"></div>
+        <div class="si-k" style="margin-bottom:8px;">Tema Warna</div>
+        <div class="theme-grid">
+          <div class="theme-swatch" data-theme="hijau" onclick="setTheme('hijau')" title="Hijau Emerald (default)">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#0f2a18,#081a0e);">
+              <span class="theme-dot" style="background:#22c55e;"></span><span class="theme-dot" style="background:#d4af37;"></span>
+            </div>
+            <div class="theme-name">Hijau Emerald</div>
+          </div>
+          <div class="theme-swatch" data-theme="ungu" onclick="setTheme('ungu')" title="Ungu-Biru Vibrant">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#6a11cb,#2575fc);">
+              <span class="theme-dot" style="background:#a78bfa;"></span><span class="theme-dot" style="background:#60a5fa;"></span>
+            </div>
+            <div class="theme-name">Ungu-Biru Vibrant</div>
+          </div>
+          <div class="theme-swatch" data-theme="terang" onclick="setTheme('terang')" title="Terang">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#ffffff,#eef1f6);border:1px solid #e2e5ea;">
+              <span class="theme-dot" style="background:#16a34a;"></span><span class="theme-dot" style="background:#b8860b;"></span>
+            </div>
+            <div class="theme-name">Terang</div>
+          </div>
+        </div>
+        <p style="font-size:.6rem;color:var(--TL);opacity:.5;margin-top:8px;line-height:1.6;">Pilihan tema tersimpan otomatis di perangkat ini dan langsung berlaku untuk semua halaman.</p>
       </div>
       <div class="fc"><div class="fc-t"><i class="fas fa-database"></i> Cache Offline (SQLite)</div>
         <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
@@ -631,6 +714,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
    STATE
 ════════════════════════════════════════════════════════════════════════ */
 let API_URL = '';
+const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbyPMQsQqAHk4iBt-v4xfWsFKdY9Fbn9C6jEGTAtBVlSpDb3k_xcZmpC3hid2J3gHGIy/exec';
 let currentUser = null;
 let connStatus = 'unknown';
 let dashRows = [], blokRows = [], budgetRows = [], userRows = [], auditRows = [], pksRows = [], pksHarianRows = [];
@@ -638,15 +722,62 @@ let perawatanRows = [], histPupukRows = [], pemupukanBlokRows = [];
 let perblokRows = [];
 let importParsedRows = [];
 
-const G='#22c55e',Au='#d4af37',TL='#cfe8d6',BD='#1c3d26',R='#ef4444',Y='#f59e0b',BL='#3b82f6';
+// ── SISTEM TEMA WARNA (Hijau Emerald / Ungu-Biru Vibrant / Terang) ────────
+const THEME_DEFS = {
+  hijau:  { label:'Hijau Emerald',     metaColor:'#071510', Au:'#d4af37', TL:'#cfe8d6', BD:'#1c3d26', BGV:'#081a0e', AuRGB:'212,175,55', G:'#22c55e', R:'#ef4444', Y:'#f59e0b', BL:'#3b82f6' },
+  ungu:   { label:'Ungu-Biru Vibrant', metaColor:'#1c0a42', Au:'#a78bfa', TL:'#d9d3f5', BD:'#3d2b7a', BGV:'#1c0a42', AuRGB:'167,139,250', G:'#22c55e', R:'#ef4444', Y:'#f59e0b', BL:'#60a5fa' },
+  terang: { label:'Terang',            metaColor:'#ffffff', Au:'#b8860b', TL:'#5b6472', BD:'#e2e5ea', BGV:'#f4f6f9', AuRGB:'184,134,11', G:'#16a34a', R:'#dc2626', Y:'#d97706', BL:'#2563eb' }
+};
+let Au, TL, BD, BGV, AuRGB, G, R, Y, BL, currentTheme = 'hijau';
+function computeThemeVars(name){
+  const t = THEME_DEFS[name] || THEME_DEFS.hijau;
+  currentTheme = THEME_DEFS[name] ? name : 'hijau';
+  Au = t.Au; TL = t.TL; BD = t.BD; BGV = t.BGV; AuRGB = t.AuRGB;
+  G = t.G; R = t.R; Y = t.Y; BL = t.BL;
+}
+computeThemeVars('hijau');
 const bC={toolbar:{show:false},background:'transparent',fontFamily:"'Poppins',sans-serif"};
-const grid={borderColor:BD,strokeDashArray:3};
+let grid={borderColor:BD,strokeDashArray:3};
 const xA=c=>({labels:{style:{colors:TL,fontSize:'10px'}},...(c?{categories:c}:{})});
 const yA=f=>({labels:{formatter:f,style:{colors:TL,fontSize:'10px'}}});
+
+// Terapkan variabel warna chart JS + atribut data-theme di <html> + meta theme-color
+function applyChartTheme(name){
+  computeThemeVars(name);
+  grid.borderColor = BD;
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if(metaTheme) metaTheme.content = THEME_DEFS[currentTheme].metaColor;
+}
+
+// Ganti tema secara permanen (dipanggil dari klik swatch di halaman Settings)
+async function setTheme(name){
+  applyChartTheme(name);
+  await kvSet('wrp_theme', currentTheme);
+  updateThemeSwatchUI();
+  // Refresh halaman yang sedang aktif supaya chart ikut memakai warna aksen baru
+  const activePage = document.querySelector('.pg.active');
+  if(activePage) render(activePage.id.replace('pg-',''));
+  showToast('Tema tampilan diganti ke "'+THEME_DEFS[currentTheme].label+'"');
+}
+
+function updateThemeSwatchUI(){
+  document.querySelectorAll('.theme-swatch').forEach(el=>{
+    el.classList.toggle('active', el.dataset.theme===currentTheme);
+  });
+}
+
+// Muat tema tersimpan saat aplikasi pertama kali dibuka (dipanggil dari bootstrap)
+async function initTheme(){
+  let saved = null;
+  try{ saved = await kvGet('wrp_theme'); }catch(e){}
+  applyChartTheme(saved || 'hijau');
+  updateThemeSwatchUI();
+}
 const BULAN_NAMA = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
 // Halaman yang TIDAK BOLEH diakses sama sekali oleh role Viewer
-const VIEWER_BLOCKED_PAGES = ['import','mblok','muser','settings'];
+const VIEWER_BLOCKED_PAGES = ['import','mblok','muser'];
 
 /* ════════════════════════════════════════════════════════════════════════
    OFFLINE DB — SQLite (sql.js/WASM) dipersist ke IndexedDB
@@ -1133,6 +1264,7 @@ async function loadConfig(){
     const v = await kvGet('wrp_api_url');
     if(v) API_URL = v;
   }catch(e){}
+  if(!API_URL) API_URL = DEFAULT_API_URL; // isi otomatis kolom tes koneksi kalau belum pernah diatur
   document.getElementById('cfg-url').value = API_URL;
   document.getElementById('cfg-url-solo').value = API_URL;
 }
@@ -1468,6 +1600,8 @@ function populateYearMonthFilters(){
   document.getElementById('pks-bulan').innerHTML = mOpts;
   document.getElementById('bud-tahun-f').innerHTML = yOpts;
   document.getElementById('pb-tahun').innerHTML = yOpts;
+  document.getElementById('pk-tahun').innerHTML = ySel.innerHTML;
+  document.getElementById('pk-bulan').innerHTML = mOpts;
 }
 
 // all raw data
@@ -1723,7 +1857,7 @@ function renderDashboard(rows, harianRows, hasTanggalData, tahun, bulan){
         {name:'Restan KG',data:harianRows.map(r=>Math.round(r.restanKg||0))}
       ],
       dataLabels:{enabled:false},stroke:{curve:'smooth',width:[2,2],dashArray:[0,4]},
-      fill:{type:'gradient',gradient:{colorStops:[{offset:0,color:G,opacity:.3},{offset:100,color:'#081a0e',opacity:.04}]}},
+      fill:{type:'gradient',gradient:{colorStops:[{offset:0,color:G,opacity:.3},{offset:100,color:BGV,opacity:.04}]}},
       xaxis:xA(harianRows.map(r=>r.tanggal.substring(8,10)+'/'+r.tanggal.substring(5,7))),
       yaxis:yA(v=>(v/1000).toFixed(0)+'K'),
       tooltip:{theme:'dark',y:{formatter:v=>v.toLocaleString('id-ID')+' Kg'}},
@@ -1735,7 +1869,7 @@ function renderDashboard(rows, harianRows, hasTanggalData, tahun, bulan){
     series:[{name:'Aktual',data:Object.values(byKebun).map(v=>Math.round(v.ac))},{name:'Budget',data:Object.values(byKebun).map(v=>Math.round(v.b))}],
     dataLabels:{enabled:false},plotOptions:{bar:{borderRadius:4,columnWidth:'55%'}},
     xaxis:xA(Object.keys(byKebun)),yaxis:yA(v=>(v/1000).toFixed(0)+'K'),
-    colors:[G,'rgba(212,175,55,.45)'],tooltip:{theme:'dark'},grid,legend:{labels:{colors:TL}}}).render();
+    colors:[G,`rgba(${AuRGB},.45)`],tooltip:{theme:'dark'},grid,legend:{labels:{colors:TL}}}).render();
 }
 function toggleRawTable(){
   const wrap = document.getElementById('raw-table-wrap');
@@ -1746,6 +1880,144 @@ function toggleRawTable(){
   tgl.innerHTML = showing
     ? '<i class="fas fa-chevron-right"></i> <i class="fas fa-table-list"></i> Data Mentah (Raw rows dari Sheet) — klik untuk tampilkan'
     : '<i class="fas fa-chevron-down"></i> <i class="fas fa-table-list"></i> Data Mentah (Raw rows dari Sheet) — klik untuk sembunyikan';
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   PER KEBUN — setara Dashboard Produksi, filter hanya Tahun/Bulan/Kebun
+════════════════════════════════════════════════════════════════════════ */
+let pkAllRows = [], pkAllHarianRows = [], pkRows = [];
+
+function populatePkKebunFilter(rows){
+  const kebunSel = document.getElementById('pk-kebun');
+  const curKebun = kebunSel.value;
+  const kebuns = [...new Set(rows.map(r=>r.KEBUN).filter(Boolean))].sort();
+  kebunSel.innerHTML = '<option value="">Semua Kebun</option>' +
+    kebuns.map(k=>`<option value="${k}" ${k===curKebun?'selected':''}>${k}</option>`).join('');
+}
+
+function onPkKebunChange(){
+  applyPkFilter();
+}
+
+function applyPkFilter(){
+  const kebun = document.getElementById('pk-kebun').value;
+  const tahun = document.getElementById('pk-tahun').value;
+  const bulan = document.getElementById('pk-bulan').value;
+  let rows       = pkAllRows;
+  let harianRows = pkAllHarianRows;
+  if(kebun){ rows = rows.filter(r=>String(r.KEBUN)===kebun); harianRows = harianRows.filter(r=>String(r.kebun||r.KEBUN||'')===kebun); }
+  pkRows = rows;
+  if(!rows.length){
+    document.getElementById('pk-content').innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i>Tidak ada data untuk filter yang dipilih.</div>';
+    return;
+  }
+  const hasTanggalData = harianRows.some(r=>r.tanggal);
+  renderPerKebun(rows, harianRows, hasTanggalData, tahun, bulan);
+}
+
+async function loadPerKebun(){
+  const el = document.getElementById('pk-content');
+  el.innerHTML = '<div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat data dari Google Sheets...</div>';
+  if(!API_URL){
+    el.innerHTML = `<div class="empty-state"><i class="fas fa-plug-circle-xmark"></i>Backend belum terhubung.${isViewer()?'':' <br><br><button class="btn btn-g" onclick="go(\'settings\')"><i class="fas fa-cog"></i> Buka Settings</button>'}</div>`;
+    return;
+  }
+  const tahun = document.getElementById('pk-tahun').value;
+  const bulan = document.getElementById('pk-bulan').value;
+  try{
+    const [rProd, rHarian] = await Promise.all([
+      api('getProduksi', {tahun, bulan}),
+      api('getProduksiHarian', {tahun, bulan})
+    ]);
+    pkAllRows       = rProd.data;
+    pkAllHarianRows = rHarian.data;
+    if(!pkAllRows.length){
+      el.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i>Tidak ada data produksi untuk periode ini di sheet.</div>';
+      document.getElementById('pk-kebun').innerHTML='<option value="">Semua Kebun</option>';
+      return;
+    }
+    populatePkKebunFilter(pkAllRows);
+    applyPkFilter();
+  }catch(e){
+    el.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i>Gagal memuat data: ${escHtml(e.message)}<br><br><button class="btn btn-o btn-sm" onclick="loadPerKebun()"><i class="fas fa-sync-alt"></i> Coba Lagi</button></div>`;
+  }
+}
+
+function renderPerKebun(rows, harianRows, hasTanggalData, tahun, bulan){
+  const el = document.getElementById('pk-content');
+  const totJJG = rows.reduce((a,r)=>a+r.JJG,0);
+  const totKG = rows.reduce((a,r)=>a+r.KG,0);
+  const totHK = rows.reduce((a,r)=>a+r.HK,0);
+  const totBudget = rows.reduce((a,r)=>a+r.BUDGET_KG,0);
+  const totSensus = rows.reduce((a,r)=>a+r.SENSUS_KG,0);
+  const totRestan = harianRows.reduce((a,r)=>a+(r.restanKg||0),0);
+  const avgBJR = rows.filter(r=>r.BJR>0).length ? (rows.reduce((a,r)=>a+r.BJR,0)/rows.filter(r=>r.BJR>0).length) : 0;
+  const ach = totBudget>0 ? (totKG/totBudget*100) : 0;
+
+  const byKebun = {};
+  rows.forEach(r=>{
+    if(!byKebun[r.KEBUN]) byKebun[r.KEBUN] = {ac:0,b:0,sen:0,jjg:0,hk:0,bjrList:[],afds:new Set()};
+    byKebun[r.KEBUN].ac += r.KG;
+    byKebun[r.KEBUN].b += r.BUDGET_KG;
+    byKebun[r.KEBUN].sen += r.SENSUS_KG;
+    byKebun[r.KEBUN].jjg += r.JJG;
+    byKebun[r.KEBUN].hk += r.HK;
+    if(r.BJR>0) byKebun[r.KEBUN].bjrList.push(r.BJR);
+    byKebun[r.KEBUN].afds.add(r.AFD);
+  });
+  const kebunArr = Object.entries(byKebun).map(([k,v])=>({
+    kebun:k, ac:v.ac, b:v.b, sen:v.sen, jjg:v.jjg, hk:v.hk, afdCount:v.afds.size,
+    bjr: v.bjrList.length ? v.bjrList.reduce((a,b)=>a+b,0)/v.bjrList.length : 0
+  })).sort((a,b)=>a.kebun.localeCompare(b.kebun));
+
+  const calc = calcExecAlert(rows, harianRows, tahun, bulan);
+
+  el.innerHTML = `
+    <div class="pbar"><div class="pbar-l"><i class="fas fa-city"></i><div><div class="p-lbl">Periode Data</div><div class="p-date">${bulan?BULAN_NAMA[bulan]:'Semua Bulan'} ${tahun}</div></div></div><span class="bdg bdg-g">${rows.length} baris dari Sheet · ${kebunArr.length} kebun</span></div>
+    ${renderExecAlertHtml(calc)}
+    <div class="kg7">
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-seedling" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Total JJG</div><div class="kv">${Math.round(totJJG).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-weight-hanging" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Total KG</div><div class="kv w">${Math.round(totKG).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-box-open" style="color:var(--R);font-size:.7rem;"></i></div><div class="klbl">Restan KG</div><div class="kv r">${Math.round(totRestan).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(59,130,246,.15);"><i class="fas fa-chart-pie" style="color:var(--BL);font-size:.7rem;"></i></div><div class="klbl">Sensus KG</div><div class="kv b">${Math.round(totSensus).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-percentage" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Achievement</div><div class="kv ${ach>=95?'':'y'}">${ach.toFixed(1)}%</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(245,158,11,.15);"><i class="fas fa-balance-scale" style="color:var(--Y);font-size:.7rem;"></i></div><div class="klbl">Rata BJR</div><div class="kv">${avgBJR.toFixed(2)} Kg</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-users" style="color:var(--R);font-size:.7rem;"></i></div><div class="klbl">Total HK</div><div class="kv r">${Math.round(totHK).toLocaleString('id-ID')}</div></div>
+    </div>
+    ${hasTanggalData ? `<div class="cc"><div class="cc-t"><i class="fas fa-chart-area"></i> Trend Produksi & Restan KG Harian</div><div id="ch-pkh"></div></div>` :
+      `<div class="cc"><div class="cc-t"><i class="fas fa-chart-area"></i> Trend Produksi Harian</div><div class="empty-state"><i class="fas fa-calendar-xmark"></i>Belum ada data dengan kolom TANGGAL terisi.</div></div>`}
+    <div class="gr2">
+      <div class="cc"><div class="cc-t"><i class="fas fa-building"></i> Aktual vs Budget per Kebun</div><div id="ch-pke"></div></div>
+      <div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table"></i> Detail per Kebun</span><span style="font-size:.6rem;opacity:.5;">${kebunArr.length} kebun</span></div>
+        <div class="tw" style="max-height:240px;"><table class="tbl"><thead><tr><th>Kebun</th><th>Jml AFD</th><th>Aktual (Kg)</th><th>Budget (Kg)</th><th>Ach%</th><th>Rata BJR</th></tr></thead><tbody>
+        ${kebunArr.map(r=>{const p=r.b>0?(r.ac/r.b*100):0; const cl=p>=95?'g':p>=85?'wd':'bd';
+          return `<tr><td><b>${escHtml(r.kebun)}</b></td><td>${r.afdCount}</td><td>${Math.round(r.ac).toLocaleString('id-ID')}</td><td>${Math.round(r.b).toLocaleString('id-ID')}</td><td class="${cl}">${p.toFixed(1)}%</td><td>${r.bjr.toFixed(2)}</td></tr>`;
+        }).join('')}
+        </tbody></table></div>
+      </div>
+    </div>
+  `;
+
+  if(hasTanggalData && harianRows.length){
+    new ApexCharts(document.getElementById('ch-pkh'),{chart:{...bC,type:'area',height:220},
+      series:[
+        {name:'Produksi (Kg)',data:harianRows.map(r=>Math.round(r.kg))},
+        {name:'Restan KG',data:harianRows.map(r=>Math.round(r.restanKg||0))}
+      ],
+      dataLabels:{enabled:false},stroke:{curve:'smooth',width:[2,2],dashArray:[0,4]},
+      fill:{type:'gradient',gradient:{colorStops:[{offset:0,color:G,opacity:.3},{offset:100,color:BGV,opacity:.04}]}},
+      xaxis:xA(harianRows.map(r=>r.tanggal.substring(8,10)+'/'+r.tanggal.substring(5,7))),
+      yaxis:yA(v=>(v/1000).toFixed(0)+'K'),
+      tooltip:{theme:'dark',y:{formatter:v=>v.toLocaleString('id-ID')+' Kg'}},
+      colors:[G,R],grid,markers:{size:3,colors:[G],strokeColors:[R],strokeWidth:2},
+      legend:{labels:{colors:TL}}}).render();
+  }
+
+  new ApexCharts(document.getElementById('ch-pke'),{chart:{...bC,type:'bar',height:240},
+    series:[{name:'Aktual',data:kebunArr.map(v=>Math.round(v.ac))},{name:'Budget',data:kebunArr.map(v=>Math.round(v.b))}],
+    dataLabels:{enabled:false},plotOptions:{bar:{borderRadius:4,columnWidth:'55%'}},
+    xaxis:xA(kebunArr.map(v=>v.kebun)),yaxis:yA(v=>(v/1000).toFixed(0)+'K'),
+    colors:[G,`rgba(${AuRGB},.45)`],tooltip:{theme:'dark'},grid,legend:{labels:{colors:TL}}}).render();
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -2018,7 +2290,7 @@ async function loadPKS(){
         series:[{name:'Actual',data:kegArr.map(k=>Math.round(k.actual))},{name:'Budget',data:kegArr.map(k=>Math.round(k.budget))}],
         dataLabels:{enabled:false},plotOptions:{bar:{borderRadius:4,columnWidth:'55%'}},
         xaxis:xA(kegArr.map(k=>k.kegiatan)),yaxis:yA(v=>v.toLocaleString('id-ID')),
-        colors:[G,'rgba(212,175,55,.45)'],tooltip:{theme:'dark'},grid,legend:{labels:{colors:TL}}}).render();
+        colors:[G,`rgba(${AuRGB},.45)`],tooltip:{theme:'dark'},grid,legend:{labels:{colors:TL}}}).render();
 
       new ApexCharts(document.getElementById('ch-pks-pct'),{chart:{...bC,type:'bar',height:240},
         series:[{name:'%PCP',data:kegArr.map(k=>+k.pct.toFixed(1))}],
@@ -2312,7 +2584,7 @@ async function loadUsers(){
 function renderUserTable(data){
   const tb = document.getElementById('user-tb');
   if(!data.length){ tb.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada user lain.</div></td></tr>`; return; }
-  const rc={'Super Admin':`background:rgba(212,175,55,.2);color:${Au}`,'Admin':`background:rgba(34,197,94,.15);color:${G}`,'Viewer':`background:rgba(59,130,246,.15);color:${BL}`};
+  const rc={'Super Admin':`background:rgba(${AuRGB},.2);color:${Au}`,'Admin':`background:rgba(34,197,94,.15);color:${G}`,'Viewer':`background:rgba(59,130,246,.15);color:${BL}`};
   tb.innerHTML = data.map((r,i)=>{const sc=r.STATUS==='Aktif'?'g':'wd';
     return `<tr><td>${i+1}</td><td><b>${escHtml(r.NAMA)}</b></td><td>${escHtml(r.USERNAME)}</td><td>${escHtml(r.EMAIL)}</td><td><span style="${rc[r.ROLE]||''};padding:2px 8px;border-radius:4px;font-size:.6rem;font-weight:600;">${escHtml(r.ROLE)}</span></td><td>${escHtml(r.ESTATE_AKSES)}</td><td class="${sc}">● ${escHtml(r.STATUS)}</td><td>${r.LAST_LOGIN?new Date(r.LAST_LOGIN).toLocaleString('id-ID'):'-'}</td>
     <td class="role-write-col"><button class="btn btn-r btn-sm" onclick="deleteUserRow(${r._row},'${escHtml(r.USERNAME)}')">Hapus</button></td></tr>`;
@@ -2809,7 +3081,7 @@ function renderPerawatan(){
         plotOptions:{bar:{borderRadius:3,columnWidth:'75%',grouped:true}},
         xaxis:xA(pbList.map(([j])=>j)),
         yaxis:yA(v=>(v/1000).toFixed(0)+'K Kg'),
-        colors:['rgba(212,175,55,.6)',G,BL,Y],
+        colors:[`rgba(${AuRGB},.6)`,G,BL,Y],
         tooltip:{theme:'dark',y:{formatter:v=>v.toLocaleString('id-ID')+' Kg'}},
         grid,legend:{labels:{colors:TL},position:'top'}
       }).render();
@@ -2823,39 +3095,22 @@ function renderPerawatan(){
 ════════════════════════════════════════════════════════════════════════ */
 
 function populatePbFilters(rows){
-  const kebunSel = document.getElementById('pb-kebun');
   const afdSel   = document.getElementById('pb-afd');
   const blokSel  = document.getElementById('pb-blok');
-  const curKebun = kebunSel.value;
   const curAfd   = afdSel.value;
   const curBlok  = blokSel.value;
 
-  // Kebun
-  const kebuns = [...new Set(rows.map(r=>r.KEBUN||r.ESTATE||r.kebun||r.estate).filter(Boolean))].sort();
-  kebunSel.innerHTML = '<option value="">Semua Kebun</option>' +
-    kebuns.map(k=>`<option value="${k}" ${k===curKebun?'selected':''}>${k}</option>`).join('');
-
-  // AFD (cascade dari kebun)
-  let afdSrc = rows;
-  if(curKebun) afdSrc = afdSrc.filter(r=>(r.KEBUN||r.ESTATE||r.kebun||r.estate)===curKebun);
-  const afds = [...new Set(afdSrc.map(r=>r.AFD||r.afd).filter(Boolean))].sort();
+  // AFD
+  const afds = [...new Set(rows.map(r=>r.AFD||r.afd).filter(Boolean))].sort();
   afdSel.innerHTML = '<option value="">Semua AFD</option>' +
     afds.map(a=>`<option value="${a}" ${a===curAfd?'selected':''}>${a}</option>`).join('');
 
-  // Blok (cascade dari kebun+afd)
+  // Blok (cascade dari afd)
   let blokSrc = rows;
-  if(curKebun) blokSrc = blokSrc.filter(r=>(r.KEBUN||r.ESTATE||r.kebun||r.estate)===curKebun);
   if(curAfd)   blokSrc = blokSrc.filter(r=>(r.AFD||r.afd)===curAfd);
   const bloks = [...new Set(blokSrc.map(r=>r.BLOK||r.blok||r.KODE_BLOK||r.kode_blok).filter(Boolean))].sort();
   blokSel.innerHTML = '<option value="">Semua Blok</option>' +
     bloks.map(b=>`<option value="${b}" ${b===curBlok?'selected':''}>${b}</option>`).join('');
-}
-
-function onPbKebunChange(){
-  document.getElementById('pb-afd').value  = '';
-  document.getElementById('pb-blok').value = '';
-  populatePbFilters(perblokRows);
-  renderPerblok();
 }
 
 function onPbAfdChange(){
@@ -2902,13 +3157,11 @@ function pbGet(r, ...keys){
 function renderPerblok(){
   const el    = document.getElementById('pb-content');
   const tahun = document.getElementById('pb-tahun').value;
-  const kebun = document.getElementById('pb-kebun').value;
   const afd   = document.getElementById('pb-afd').value;
   const blok  = document.getElementById('pb-blok').value;
 
   // Filter
   let rows = perblokRows;
-  if(kebun) rows = rows.filter(r=>(r.KEBUN||r.ESTATE||r.kebun||r.estate)===kebun);
   if(afd)   rows = rows.filter(r=>(r.AFD||r.afd)===afd);
   if(blok)  rows = rows.filter(r=>(r.BLOK||r.blok||r.KODE_BLOK)===blok);
 
@@ -2961,7 +3214,7 @@ function renderPerblok(){
 
   let html = `<div class="pbar"><div class="pbar-l"><i class="fas fa-map"></i><div>
     <div class="p-lbl">Data Per Blok — ${tahun}</div>
-    <div class="p-date">${kebun||'Semua Kebun'}${afd?' · AFD '+afd:''}${blok?' · Blok '+blok:''}</div>
+    <div class="p-date">${afd?'AFD '+afd:'Semua AFD'}${blok?' · Blok '+blok:''}</div>
   </div></div><span class="bdg bdg-g">${rows.length} baris · ${blokArr.length} blok</span></div>`;
 
   // ── KPI Cards ──
@@ -3159,6 +3412,7 @@ function renderPerblok(){
 ════════════════════════════════════════════════════════════════════════ */
 function render(id){
   if(id==='dashboard') loadDashboard();
+  else if(id==='perkebun') loadPerKebun();
   else if(id==='perblok') loadPerblok();
   else if(id==='import') loadImportHistory();
   else if(id==='mblok') loadBlok();
@@ -3171,6 +3425,7 @@ function render(id){
 }
 
 window.addEventListener('DOMContentLoaded', async ()=>{
+  await initTheme();
   installLogos();
   populateYearMonthFilters();
   registerServiceWorker();
