@@ -63,13 +63,20 @@ html[data-theme="terang"] .sb,html[data-theme="terang"] .login-box,html[data-the
 .theme-swatch.active{border-color:var(--G);}
 .theme-preview{height:44px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:6px;}
 .theme-dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.25);}
-.theme-name{font-size:.6rem;color:var(--TL);text-align:center;margin-top:6px;opacity:.8;}
+.theme-name{font-size:0.696rem;color:var(--TL);text-align:center;margin-top:6px;opacity:.8;}
 .theme-swatch.active .theme-name{color:var(--G);font-weight:600;opacity:1;}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display:flex;}
-.sb{width:220px;min-width:220px;background:linear-gradient(180deg,var(--sb),var(--sb2));height:100vh;position:fixed;top:0;left:0;overflow-y:auto;border-right:1px solid var(--BD);z-index:200;display:flex;flex-direction:column;transition:width .25s;}
-.sb.col{width:58px;min-width:58px;}
+body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display:flex;position:relative;}
+/* Blob dekoratif tetap di belakang layar — supaya efek "glass" (backdrop-
+   blur) di kartu-kartu punya sesuatu untuk di-blur, bukan cuma warna flat.
+   Dipakai di SEMUA tema (warnanya otomatis ikut var(--G)/var(--Au) tema
+   aktif), bukan cuma tema Ungu-Biru yang sebelumnya sudah glass duluan. */
+body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(95px);z-index:0;pointer-events:none;opacity:.28;}
+body::before{width:520px;height:520px;top:-170px;right:-140px;background:radial-gradient(circle,var(--G),transparent 70%);}
+body::after{width:480px;height:480px;bottom:-160px;left:200px;background:radial-gradient(circle,var(--Au),transparent 70%);}
+.sb{width:222px;min-width:222px;background:linear-gradient(180deg,var(--sb),var(--sb2));height:calc(100vh - 20px);position:fixed;top:10px;left:10px;overflow-y:auto;overflow-x:hidden;border:1px solid rgba(255,255,255,.08);border-radius:20px;z-index:200;display:flex;flex-direction:column;transition:width .25s,left .25s;box-shadow:0 12px 32px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.sb.col{width:60px;min-width:60px;}
 .sb.col .nav-label,.sb.col .nav-text,.sb.col .brand-name,.sb.col .brand-sub,.sb.col .brand-author,.sb.col .user-name,.sb.col .user-role{display:none;}
 .sb.col .sb-brand{align-items:center;padding:14px 0;}
 .sb.col .b-logo{margin:0 auto;}
@@ -78,193 +85,247 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 .sb-brand{padding:16px 12px 12px;border-bottom:1px solid var(--BD);display:flex;flex-direction:column;align-items:center;text-align:center;}
 .b-logo{width:70px;height:70px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:7px;}
 .b-logo svg{width:100%;height:100%;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5));}
-.brand-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.88rem;color:#fff;letter-spacing:1px;line-height:1.2;}
+.brand-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:1.021rem;color:#fff;letter-spacing:1px;line-height:1.2;}
 .brand-name span{color:var(--G);display:block;}
-.brand-sub{font-size:0.5rem;color:var(--Au);letter-spacing:.4px;margin-top:3px;text-transform:uppercase;line-height:1.5;}
-.brand-author{font-size:0.56rem;color:var(--TL);opacity:.5;margin-top:2px;}
+.brand-sub{font-size:0.58rem;color:var(--Au);letter-spacing:.4px;margin-top:3px;text-transform:uppercase;line-height:1.5;}
+.brand-author{font-size:0.65rem;color:var(--TL);opacity:.5;margin-top:2px;}
 .sb nav{padding:6px 0;flex:1;}
-.nav-label{font-size:0.56rem;color:var(--Au);padding:9px 12px 3px;text-transform:uppercase;letter-spacing:1px;opacity:.6;white-space:nowrap;}
-.nav-item{display:flex;align-items:center;padding:9px 12px;color:var(--TL);font-family:'Poppins',sans-serif;font-size:0.74rem;transition:all .18s;border-left:3px solid transparent;cursor:pointer;gap:9px;user-select:none;white-space:nowrap;}
-.nav-item:hover{background:rgba(34,197,94,.12);border-left-color:var(--G);color:#fff;}
-.nav-item.active{background:linear-gradient(90deg,rgba(34,197,94,.26),rgba(var(--Au-rgb),.08));border-left-color:var(--Au);color:#fff;}
-.nav-item i{width:16px;text-align:center;font-size:0.8rem;color:var(--G);flex-shrink:0;}
+.nav-label{font-size:0.65rem;color:var(--Au);padding:9px 12px 3px;text-transform:uppercase;letter-spacing:1px;opacity:.6;white-space:nowrap;}
+.nav-item{display:flex;align-items:center;margin:2px 8px;padding:10px 12px;color:var(--TL);font-family:'Poppins',sans-serif;font-size:0.858rem;transition:all .18s;border-left:3px solid transparent;border-radius:10px;cursor:pointer;gap:9px;user-select:none;white-space:nowrap;}
+.nav-item:hover{background:rgba(34,197,94,.14);border-left-color:var(--G);color:#fff;}
+.nav-item.active{background:linear-gradient(90deg,rgba(34,197,94,.28),rgba(var(--Au-rgb),.1));border-left-color:var(--Au);color:#fff;box-shadow:0 3px 10px rgba(34,197,94,.15);}
+.nav-item i{width:18px;text-align:center;font-size:0.928rem;color:var(--G);flex-shrink:0;}
 .nav-item.active i{color:var(--Au);}
 .nav-item.hidden-role{display:none !important;}
 .sb-user{padding:9px 12px;border-top:1px solid var(--BD);display:flex;align-items:center;gap:8px;}
-.u-av{width:28px;height:28px;background:linear-gradient(135deg,var(--G),#16a34a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:600;color:#fff;flex-shrink:0;}
-.user-name{font-size:.7rem;font-weight:500;color:#fff;}
-.user-role{font-size:.57rem;color:var(--Au);}
-.main{margin-left:220px;flex:1;overflow-y:auto;height:100vh;padding:18px;transition:margin-left .25s;}
-.main.exp{margin-left:58px;}
+.u-av{width:30px;height:30px;background:linear-gradient(135deg,var(--G),#16a34a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.719rem;font-weight:600;color:#fff;flex-shrink:0;}
+.user-name{font-size:0.812rem;font-weight:500;color:#fff;}
+.user-role{font-size:0.661rem;color:var(--Au);}
+.main{margin-left:252px;flex:1;overflow-y:auto;height:100vh;padding:18px;transition:margin-left .25s;position:relative;z-index:1;}
+.main.exp{margin-left:90px;}
 .main.solo{margin-left:0;}
 .pg{display:none;animation:fadeIn .22s ease;}
 .pg.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-.topbar h1{font-family:'Montserrat',sans-serif;font-size:1.4rem;font-weight:700;color:#fff;}
-.topbar p{font-size:.75rem;color:var(--TL);opacity:.68;margin-top:1px;}
+.topbar h1{font-family:'Montserrat',sans-serif;font-size:1.624rem;font-weight:700;color:#fff;}
+.topbar p{font-size:0.87rem;color:var(--TL);opacity:.68;margin-top:1px;}
 .tb-left{display:flex;align-items:center;gap:10px;}
-.tog-sb{background:rgba(34,197,94,.12);border:1px solid var(--BD);color:var(--G);width:30px;height:30px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .2s;flex-shrink:0;}
+.tog-sb{background:rgba(34,197,94,.12);border:1px solid var(--BD);color:var(--G);width:32px;height:32px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.928rem;transition:all .2s;flex-shrink:0;}
 .tog-sb:hover{background:rgba(34,197,94,.25);}
 .h-actions{display:flex;gap:7px;flex-wrap:wrap;}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:6px;font-size:.72rem;font-weight:500;cursor:pointer;border:none;transition:all .18s;font-family:'Poppins',sans-serif;white-space:nowrap;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:11px;font-size:0.835rem;font-weight:500;cursor:pointer;border:none;transition:all .18s;font-family:'Poppins',sans-serif;white-space:nowrap;}
 .btn:disabled{opacity:.45;cursor:not-allowed;}
-.btn-o{background:transparent;border:1px solid var(--BD);color:var(--TL);}
+.btn-o{background:rgba(255,255,255,.04);border:1px solid var(--BD);color:var(--TL);backdrop-filter:blur(6px);}
 .btn-o:hover{background:var(--GL);border-color:var(--G);}
-.btn-g{background:var(--G);color:#000;}
-.btn-g:hover{background:#16a34a;}
-.btn-au{background:var(--Au);color:#000;}
-.btn-r{background:var(--R);color:#fff;}
-.btn-sm{padding:3px 8px;font-size:.62rem;}
-.conn-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid var(--BD);border-radius:8px;padding:7px 14px;margin-bottom:14px;font-size:.68rem;}
+.btn-g{background:linear-gradient(135deg,var(--G),#16a34a);color:#04160a;box-shadow:0 3px 10px rgba(34,197,94,.3);}
+.btn-g:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 5px 14px rgba(34,197,94,.4);}
+.btn-au{background:linear-gradient(135deg,var(--Au),#b8860b);color:#1a1400;}
+.btn-r{background:linear-gradient(135deg,var(--R),#b91c1c);color:#fff;}
+.btn-sm{padding:4px 10px;font-size:0.719rem;border-radius:8px;}
+.conn-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:8px 15px;margin-bottom:14px;font-size:0.789rem;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 14px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.05);}
 .conn-l{display:flex;align-items:center;gap:8px;}
 .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .dot.on{background:var(--G);box-shadow:0 0 6px var(--G);}
 .dot.off{background:var(--R);}
 .dot.busy{background:var(--Y);animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-.pbar{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid var(--BD);border-radius:8px;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.pbar{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 14px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.05);}
 .pbar-l{display:flex;align-items:center;gap:9px;}
 .pbar-l i{color:var(--G);}
-.p-lbl{font-size:.62rem;color:var(--TL);opacity:.58;}
-.p-date{font-size:.8rem;font-weight:500;color:#fff;}
-.bdg{font-size:.6rem;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
+.p-lbl{font-size:0.719rem;color:var(--TL);opacity:.58;}
+.p-date{font-size:0.928rem;font-weight:500;color:#fff;}
+.bdg{font-size:0.696rem;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
 .bdg-g{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:var(--G);}
 .bdg-r{background:var(--R);color:#fff;}
 .bdg-y{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);color:var(--Y);}
 .bdg-au{background:rgba(var(--Au-rgb),.15);border:1px solid rgba(var(--Au-rgb),.4);color:var(--Au);}
-.abox{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.02));border:1px solid rgba(239,68,68,.35);border-radius:10px;padding:14px 17px;margin-bottom:16px;}
-.ybox{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.02));border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:14px 17px;margin-bottom:16px;}
-.gbox{background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.02));border:1px solid rgba(34,197,94,.35);border-radius:10px;padding:14px 17px;margin-bottom:16px;}
+.abox{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.02));border:1px solid rgba(239,68,68,.35);border-radius:14px;padding:14px 17px;margin-bottom:16px;}
+.ybox{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.02));border:1px solid rgba(245,158,11,.35);border-radius:14px;padding:14px 17px;margin-bottom:16px;}
+.gbox{background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.02));border:1px solid rgba(34,197,94,.35);border-radius:14px;padding:14px 17px;margin-bottom:16px;}
 .bx-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
-.bx-ttl{display:flex;align-items:center;gap:7px;font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.bx-ttl{display:flex;align-items:center;gap:7px;font-size:0.858rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
 .bx-ttl.r{color:var(--R);}.bx-ttl.y{color:var(--Y);}.bx-ttl.g{color:var(--G);}
-.bx-main{font-size:.85rem;font-weight:600;color:#fff;margin-bottom:3px;}
-.bx-sub{font-size:.69rem;color:var(--TL);opacity:.68;margin-bottom:11px;line-height:1.5;}
+.bx-main{font-size:0.986rem;font-weight:600;color:#fff;margin-bottom:3px;}
+.bx-sub{font-size:0.8rem;color:var(--TL);opacity:.68;margin-bottom:11px;line-height:1.5;}
 .sg{display:grid;gap:12px;}
 .s5{grid-template-columns:repeat(5,1fr);}
 .s4{grid-template-columns:repeat(4,1fr);}
 .s3{grid-template-columns:repeat(3,1fr);}
 .s2{grid-template-columns:repeat(2,1fr);}
-.sl{font-size:.57rem;color:var(--TL);opacity:.58;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;}
-.sv{font-size:.85rem;font-weight:600;color:#fff;}
+.sl{font-size:0.661rem;color:var(--TL);opacity:.58;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;}
+.sv{font-size:0.986rem;font-weight:600;color:#fff;}
 .sv.r{color:var(--R);}.sv.y{color:var(--Y);}.sv.g{color:var(--G);}.sv.au{color:var(--Au);}
 .pb-row{display:flex;flex-direction:column;gap:3px;}
-.pb-top{display:flex;justify-content:space-between;font-size:.65rem;color:var(--TL);opacity:.68;}
+.pb-top{display:flex;justify-content:space-between;font-size:0.754rem;color:var(--TL);opacity:.68;}
 .pb-trk{height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
 .pb-fill{height:100%;border-radius:4px;}
 .kg7{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:16px;}
 .kg4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
 .kg3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
 .kg2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
-.kc{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid var(--BD);border-radius:10px;padding:12px;}
+.kc{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 14px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.05);}
 .kc.fx{display:flex;align-items:flex-start;gap:10px;}
-.kico{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.kico{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.102rem;flex-shrink:0;}
 .kico.g{background:rgba(34,197,94,.15);color:var(--G);}
 .kico.au{background:rgba(var(--Au-rgb),.15);color:var(--Au);}
 .kico.r{background:rgba(239,68,68,.15);color:var(--R);}
 .kico.b{background:rgba(59,130,246,.15);color:var(--BL);}
 .kico.y{background:rgba(245,158,11,.15);color:var(--Y);}
-.ksmi{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.73rem;margin-bottom:6px;}
-.klbl{font-size:.58rem;color:var(--TL);opacity:.58;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;line-height:1.3;}
-.kv{font-size:.87rem;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--G);}
+.ksmi{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.847rem;margin-bottom:6px;}
+.klbl{font-size:0.673rem;color:var(--TL);opacity:.58;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;line-height:1.3;}
+.kv{font-size:1.009rem;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--G);}
 .kv.au{color:var(--Au);}.kv.r{color:var(--R);}.kv.w{color:#fff;}.kv.y{color:var(--Y);}.kv.b{color:var(--BL);}
-.kvl{font-size:1.38rem;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--G);line-height:1;margin-bottom:3px;}
+.kvl{font-size:1.601rem;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--G);line-height:1;margin-bottom:3px;}
 .kvl.au{color:var(--Au);}.kvl.r{color:var(--R);}.kvl.w{color:#fff;}.kvl.b{color:var(--BL);}.kvl.y{color:var(--Y);}
-.ksub{font-size:.6rem;color:var(--TL);opacity:.52;}
-.cc{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid var(--BD);border-radius:10px;padding:14px;margin-bottom:14px;}
-.cc-t{font-size:.76rem;font-weight:600;color:var(--Au);margin-bottom:11px;display:flex;align-items:center;gap:7px;justify-content:space-between;}
+.ksub{font-size:0.696rem;color:var(--TL);opacity:.52;}
+.cc{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.05);}
+.cc-t{font-size:0.882rem;font-weight:600;color:var(--Au);margin-bottom:11px;display:flex;align-items:center;gap:7px;justify-content:space-between;}
 .cc-t span.l{display:flex;align-items:center;gap:7px;}
-.cc-t i{color:var(--G);font-size:.8rem;}
+.cc-t i{color:var(--G);font-size:0.928rem;}
 .gr2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
 .gr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
-.rk{display:flex;gap:16px;font-size:.68rem;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--BD);flex-wrap:wrap;}
+.rk{display:flex;gap:16px;font-size:0.789rem;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--BD);flex-wrap:wrap;}
 .rk-i{display:flex;gap:5px;align-items:center;}
 .rk-l{color:var(--TL);opacity:.58;}
 .rk-v{font-weight:600;color:var(--G);}
-.tbl{width:100%;border-collapse:collapse;font-size:.7rem;}
-.tbl th{background:rgba(34,197,94,.09);color:var(--TL);font-size:.58rem;text-transform:uppercase;letter-spacing:.3px;padding:7px 9px;text-align:left;border-bottom:1px solid var(--BD);position:sticky;top:0;}
-.tbl td{padding:7px 9px;border-bottom:1px solid rgba(28,61,38,.4);color:var(--TL);}
+.tbl{width:100%;border-collapse:collapse;font-size:0.812rem;}
+.tbl th{background:rgba(34,197,94,.09);color:var(--TL);font-size:0.673rem;text-transform:uppercase;letter-spacing:.3px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--BD);position:sticky;top:0;}
+.tbl td{padding:8px 10px;border-bottom:1px solid rgba(28,61,38,.4);color:var(--TL);}
 .tbl tr:last-child td{border-bottom:none;}
 .tbl tr:hover td{background:rgba(34,197,94,.04);}
 .g{color:var(--G);font-weight:600;}
 .wd{color:var(--Y);font-weight:600;}
 .bd{color:var(--R);font-weight:600;}
-.tw{overflow-x:auto;overflow-y:auto;}
-.fc{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid var(--BD);border-radius:10px;padding:18px;margin-bottom:14px;}
-.fc-t{font-size:.87rem;font-weight:600;color:var(--Au);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--BD);display:flex;align-items:center;gap:8px;}
+.tw{overflow-x:auto;overflow-y:auto;border-radius:12px;}
+.fc{background:linear-gradient(135deg,var(--C1),var(--C2));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;margin-bottom:14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.05);}
+.fc-t{font-size:1.009rem;font-weight:600;color:var(--Au);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--BD);display:flex;align-items:center;gap:8px;}
 .fc-t i{color:var(--G);}
 .fg{display:grid;gap:12px;margin-bottom:12px;}
 .fg2{grid-template-columns:repeat(2,1fr);}
 .fg3{grid-template-columns:repeat(3,1fr);}
 .fg4{grid-template-columns:repeat(4,1fr);}
 .fgrp{display:flex;flex-direction:column;gap:4px;}
-.flbl{font-size:.65rem;color:var(--TL);opacity:.68;font-weight:500;}
-.fin,.fsl{background:rgba(255,255,255,.055);border:1px solid var(--BD);border-radius:6px;padding:7px 9px;color:var(--T);font-size:.75rem;font-family:'Roboto',sans-serif;outline:none;transition:border-color .18s;width:100%;}
-.fin:focus,.fsl:focus{border-color:var(--G);}
+.flbl{font-size:0.754rem;color:var(--TL);opacity:.68;font-weight:500;}
+.fin,.fsl{background:rgba(255,255,255,.055);border:1px solid var(--BD);border-radius:10px;padding:8px 10px;color:var(--T);font-size:0.87rem;font-family:'Roboto',sans-serif;outline:none;transition:border-color .18s,box-shadow .18s;width:100%;}
+.fin:focus,.fsl:focus{border-color:var(--G);box-shadow:0 0 0 3px rgba(34,197,94,.15);}
 .fsl option{background:var(--C1);color:var(--T);}
 .fa-r{display:flex;gap:7px;margin-top:4px;flex-wrap:wrap;}
 .tab-row{display:flex;gap:4px;margin-bottom:11px;flex-wrap:wrap;}
-.tab{padding:5px 11px;border-radius:5px;font-size:.68rem;font-weight:500;cursor:pointer;border:1px solid var(--BD);color:var(--TL);background:transparent;font-family:'Poppins',sans-serif;transition:all .18s;}
-.tab.active{background:var(--G);color:#000;border-color:var(--G);font-weight:600;}
+.tab{padding:6px 13px;border-radius:20px;font-size:0.789rem;font-weight:500;cursor:pointer;border:1px solid var(--BD);color:var(--TL);background:transparent;font-family:'Poppins',sans-serif;transition:all .18s;}
+.tab.active{background:linear-gradient(135deg,var(--G),#16a34a);color:#04160a;border-color:var(--G);font-weight:600;}
 .tab:hover:not(.active){background:var(--GL);}
 .ai{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid rgba(28,61,38,.4);}
 .ai:last-child{border-bottom:none;}
 .ad{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px;}
 .ad.g{background:var(--G);}.ad.r{background:var(--R);}.ad.au{background:var(--Au);}.ad.b{background:var(--BL);}
-.at{font-size:.62rem;color:var(--TL);opacity:.48;width:130px;flex-shrink:0;}
-.au-u{font-size:.7rem;font-weight:600;color:var(--G);margin-bottom:1px;}
-.au-a{font-size:.7rem;color:var(--TL);opacity:.78;}
+.at{font-size:0.719rem;color:var(--TL);opacity:.48;width:130px;flex-shrink:0;}
+.au-u{font-size:0.812rem;font-weight:600;color:var(--G);margin-bottom:1px;}
+.au-a{font-size:0.812rem;color:var(--TL);opacity:.78;}
 .si{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(28,61,38,.4);}
 .si:last-child{border-bottom:none;}
-.si-k{font-size:.74rem;color:var(--TL);}
-.si-s{font-size:.61rem;color:var(--TL);opacity:.48;margin-top:1px;}
+.si-k{font-size:0.858rem;color:var(--TL);}
+.si-s{font-size:0.708rem;color:var(--TL);opacity:.48;margin-top:1px;}
 .tog{width:36px;height:19px;background:var(--GL);border-radius:10px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none;}
 .tog.on{background:var(--G);}
 .tog::after{content:'';position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;background:#fff;border-radius:50%;transition:left .2s;}
 .tog.on::after{left:19.5px;}
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;align-items:center;justify-content:center;}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
 .mo.open{display:flex;}
-.md{background:linear-gradient(135deg,var(--C1),var(--C3));border:1px solid var(--BD);border-radius:12px;padding:22px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;}
+.md{background:linear-gradient(135deg,var(--C1),var(--C3));border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:22px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);}
 .md-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--BD);}
-.md-t{font-size:.95rem;font-weight:600;color:var(--Au);display:flex;align-items:center;gap:8px;}
+.md-t{font-size:1.102rem;font-weight:600;color:var(--Au);display:flex;align-items:center;gap:8px;}
 .md-t i{color:var(--G);}
-.md-x{background:none;border:none;color:var(--TL);opacity:.5;cursor:pointer;font-size:1rem;}
+.md-x{background:none;border:none;color:var(--TL);opacity:.5;cursor:pointer;font-size:1.16rem;}
 .md-x:hover{opacity:1;}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--C1);border:1px solid var(--G);border-radius:9px;padding:10px 15px;display:flex;align-items:center;gap:9px;z-index:600;transform:translateY(70px);opacity:0;transition:all .3s;font-size:.76rem;color:#fff;max-width:340px;}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--C1);border:1px solid var(--G);border-radius:9px;padding:10px 15px;display:flex;align-items:center;gap:9px;z-index:600;transform:translateY(70px);opacity:0;transition:all .3s;font-size:0.882rem;color:#fff;max-width:340px;}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast i{color:var(--G);font-size:.95rem;}
+.toast i{color:var(--G);font-size:1.102rem;}
 .toast.err{border-color:var(--R);}.toast.err i{color:var(--R);}
 .sb-row{display:flex;gap:8px;margin-bottom:11px;align-items:center;flex-wrap:wrap;}
 .sb-row .fin{flex:1;min-width:160px;}
-.uz{border:2px dashed var(--BD);border-radius:8px;padding:26px;text-align:center;cursor:pointer;transition:border-color .2s;}
+.uz{border:2px dashed var(--BD);border-radius:14px;padding:26px;text-align:center;cursor:pointer;transition:border-color .2s;}
 .uz:hover{border-color:var(--G);}
 .dvd{height:1px;background:var(--BD);margin:12px 0;}
-.slbl{font-size:.7rem;font-weight:600;color:var(--TL);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;opacity:.75;}
+.slbl{font-size:0.812rem;font-weight:600;color:var(--TL);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;opacity:.75;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--BD);border-radius:10px;}
-.pf{text-align:center;padding:14px 0 4px;font-size:.6rem;color:var(--TL);opacity:.32;}
-.empty-state{text-align:center;padding:30px 14px;color:var(--TL);opacity:.5;font-size:.74rem;}
-.empty-state i{font-size:1.6rem;display:block;margin-bottom:8px;color:var(--Y);opacity:.6;}
+.pf{text-align:center;padding:14px 0 4px;font-size:0.696rem;color:var(--TL);opacity:.32;}
+.empty-state{text-align:center;padding:30px 14px;color:var(--TL);opacity:.5;font-size:0.858rem;}
+.empty-state i{font-size:1.856rem;display:block;margin-bottom:8px;color:var(--Y);opacity:.6;}
 .spin{animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .login-wrap{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#0f2a18,#040d07 70%);display:flex;align-items:center;justify-content:center;z-index:1000;}
-.login-box{background:linear-gradient(135deg,var(--C1),var(--C3));border:1px solid var(--BD);border-radius:14px;padding:34px;width:380px;max-width:90vw;}
+.login-box{background:linear-gradient(135deg,var(--C1),var(--C3));border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:34px;width:380px;max-width:90vw;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07);}
 .login-logo{width:110px;height:110px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
 .login-logo svg{width:100%;height:100%;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));}
-.login-title{text-align:center;font-family:'Montserrat',sans-serif;font-weight:700;color:#fff;font-size:1.1rem;margin-bottom:3px;}
-.login-sub{text-align:center;font-size:.7rem;color:var(--TL);opacity:.6;margin-bottom:22px;}
-.login-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.4);color:var(--R);font-size:.7rem;padding:8px 11px;border-radius:6px;margin-bottom:12px;display:none;}
-.cfg-note{font-size:.62rem;color:var(--TL);opacity:.5;text-align:center;margin-top:16px;line-height:1.6;}
+.login-title{text-align:center;font-family:'Montserrat',sans-serif;font-weight:700;color:#fff;font-size:1.276rem;margin-bottom:3px;}
+.login-sub{text-align:center;font-size:0.812rem;color:var(--TL);opacity:.6;margin-bottom:22px;}
+.login-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.4);color:var(--R);font-size:0.812rem;padding:8px 11px;border-radius:10px;margin-bottom:12px;display:none;}
+.cfg-note{font-size:0.719rem;color:var(--TL);opacity:.5;text-align:center;margin-top:16px;line-height:1.6;}
 .cfg-note a{color:var(--G);cursor:pointer;text-decoration:underline;}
 .solo-wrap{position:fixed;inset:0;background:var(--BG);z-index:400;display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto;}
 .solo-card{max-width:600px;width:100%;}
 .solo-back{position:absolute;top:18px;left:18px;}
-.collapse-toggle{cursor:pointer;color:var(--G);font-size:.65rem;font-weight:600;display:flex;align-items:center;gap:5px;}
+/* 2 jalur (kolom) untuk kartu-kartu Settings backend di layar login, supaya
+   halamannya tidak memanjang ke bawah kalau semua kartu (Koneksi Backend,
+   Database Offline, Excel Master, Antrian Offline) ditumpuk 1 kolom.
+   Pakai CSS multi-column (bukan grid 2 kolom kaku) supaya otomatis balance
+   tinggi kedua kolom meskipun kartu "Excel Master" cuma muncul di app
+   desktop (display:none di web) — grid kaku akan bikin 1 kolom jomplang. */
+.solo-card-wide{max-width:1040px;}
+.solo-grid{column-count:2;column-gap:16px;}
+.solo-grid .fc{break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid;}
+@media (max-width:820px){
+  .solo-card-wide{max-width:600px;}
+  .solo-grid{column-count:1;}
+}
+.collapse-toggle{cursor:pointer;color:var(--G);font-size:0.754rem;font-weight:600;display:flex;align-items:center;gap:5px;}
 .collapse-toggle i{transition:transform .2s;}
 .collapse-toggle.open i{transform:rotate(90deg);}
-.disabled-note{font-size:.6rem;color:var(--TL);opacity:.4;font-style:italic;}
+.disabled-note{font-size:0.696rem;color:var(--TL);opacity:.4;font-style:italic;}
+
+/* ═══ Kalkulator Rekomendasi Material — panel "konsol" eksentrik ═══
+   Dibuat beda dari kartu ".cc" biasa: border ganda hijau/emas yang pelan²
+   bergeser (efek "circuit"), badge ikon bulat, chip info blok berwarna
+   per-status, dan panel total yang menyala seperti display kalkulator. */
+.rm-console{position:relative;overflow:hidden;border:1px solid transparent;border-radius:14px;
+  background:
+    linear-gradient(135deg,var(--C1),var(--C2)) padding-box,
+    linear-gradient(120deg,var(--G),var(--Au),var(--G)) border-box;
+  background-size:200% 200%,200% 200%;
+  animation:rmBorderShift 10s ease infinite;
+  padding:18px 18px 16px;}
+@keyframes rmBorderShift{0%{background-position:0% 50%,0% 50%;}50%{background-position:100% 50%,100% 50%;}100%{background-position:0% 50%,0% 50%;}}
+.rm-console::before{content:"";position:absolute;right:-40px;top:-40px;width:190px;height:190px;
+  background:radial-gradient(circle,rgba(var(--Au-rgb),.16),transparent 70%);pointer-events:none;}
+.rm-console::after{content:"";position:absolute;left:-60px;bottom:-60px;width:220px;height:220px;
+  background:radial-gradient(circle,rgba(34,197,94,.12),transparent 70%);pointer-events:none;}
+.rm-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;position:relative;z-index:1;}
+.rm-head-badge{flex-shrink:0;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;color:#06210f;background:linear-gradient(135deg,var(--G),var(--Au));box-shadow:0 3px 10px rgba(34,197,94,.35);}
+.rm-head h3{font-size:1.102rem;margin:0 0 4px;}
+.rm-head p{font-size:0.789rem;color:var(--TL);opacity:.65;margin:0;line-height:1.7;}
+.rm-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:36px;align-items:center;}
+.rm-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:20px;font-size:0.744rem;font-weight:600;
+  border:1px solid var(--BD);background:rgba(255,255,255,.05);color:var(--T);white-space:nowrap;}
+.rm-chip i{opacity:.85;font-size:.75em;}
+.rm-chip-ha{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.12);color:#8ff0ae;}
+.rm-chip-pkk{border-color:rgba(var(--Au-rgb),.5);background:rgba(var(--Au-rgb),.14);color:var(--Au);}
+.rm-chip-tt{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.12);color:#8fc2ff;}
+.rm-chip-warn{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.12);color:#ff9d9d;}
+.rm-chip-empty{opacity:.55;font-weight:500;}
+.rm-pengali-badge{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:6px;border:1px dashed var(--BD);
+  background:rgba(255,255,255,.03);font-size:0.87rem;color:var(--TL);min-height:37px;box-sizing:border-box;}
+.rm-pengali-badge.on{border-style:solid;border-color:rgba(var(--Au-rgb),.45);color:var(--Au);background:rgba(var(--Au-rgb),.1);font-weight:700;}
+.rm-total-panel{position:relative;z-index:1;margin-top:8px;border-radius:10px;padding:14px 16px;
+  background:linear-gradient(135deg,rgba(34,197,94,.14),rgba(var(--Au-rgb),.08));
+  border:1px solid rgba(34,197,94,.35);display:flex;flex-direction:column;gap:2px;}
+.rm-total-lbl{font-size:0.744rem;letter-spacing:.4px;text-transform:uppercase;color:var(--TL);opacity:.7;display:flex;align-items:center;gap:6px;}
+.rm-total-val{font-family:'Courier New',monospace;font-size:1.42rem;font-weight:700;color:var(--G);
+  text-shadow:0 0 14px rgba(34,197,94,.35);letter-spacing:.3px;transition:opacity .15s;}
+.rm-total-val.warn{color:var(--Y);text-shadow:none;font-size:1rem;font-family:'Roboto',sans-serif;font-weight:500;}
 </style>
 </head>
 <body>
@@ -287,18 +348,20 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
     <div class="cfg-note">Belum mengatur koneksi backend? <a onclick="openSoloSettings()">Buka Settings dulu</a></div>
     <div class="cfg-note" style="margin-top:6px;">Tidak bisa online sama sekali di perangkat ini? <a onclick="document.getElementById('import-db-file').click()">Import database offline (.json)</a></div>
     <input type="file" id="import-db-file" accept="application/json,.json" style="display:none" onchange="if(this.files&&this.files[0]){importOfflineDbFile(this.files[0]); this.value='';}">
-    <div id="import-db-info" style="display:none;font-size:.62rem;color:var(--G);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:8px 11px;margin-top:10px;line-height:1.6;"></div>
+    <div id="import-db-info" style="display:none;font-size:0.719rem;color:var(--G);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:8px 11px;margin-top:10px;line-height:1.6;"></div>
+    <div style="text-align:center;margin-top:16px;font-size:0.719rem;color:var(--TL);opacity:.55;">created by Achmad Fauzi &copy;2026 &middot; Email: vaozeei@gmail.com</div>
   </div>
 </div>
 
 <!-- SOLO SETTINGS (sebelum login, tampil minimalis tanpa sidebar/halaman lain) -->
 <div class="solo-wrap" id="solo-settings" style="display:none;">
   <button class="btn btn-o solo-back" onclick="closeSoloSettings()"><i class="fas fa-arrow-left"></i> Kembali ke Login</button>
-  <div class="solo-card">
+  <div class="solo-card solo-card-wide">
     <div style="display:flex;justify-content:center;margin-bottom:14px;"><div style="width:60px;height:60px;" id="solo-logo-slot"></div></div>
+    <div class="solo-grid">
     <div class="fc" style="margin-bottom:0;">
       <div class="fc-t"><i class="fas fa-plug"></i> Koneksi Backend</div>
-      <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:12px;line-height:1.7;">
+      <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:12px;line-height:1.7;">
         Tempel URL deployment Web App dari Google Apps Script Anda (diakhiri <code>/exec</code>). Lihat panduan deploy di komentar paling atas file <b>Code.gs</b>.
       </p>
       <div class="fgrp" style="margin-bottom:10px;"><label class="flbl">Apps Script Web App URL</label><input class="fin" id="cfg-url-solo" type="text" placeholder="https://script.google.com/macros/s/AKfycb.../exec"></div>
@@ -308,25 +371,53 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
       </div>
       <div class="dvd"></div>
       <div class="conn-bar-slot"></div>
-      <p style="font-size:.6rem;color:var(--TL);opacity:.45;line-height:1.6;">
+      <p style="font-size:0.696rem;color:var(--TL);opacity:.45;line-height:1.6;">
         <i class="fas fa-circle-info"></i> Jika status "Tidak Terhubung", periksa: (1) deployment Apps Script sudah "Anyone" akses, (2) URL diakhiri <code>/exec</code> bukan <code>/dev</code>, (3) fungsi <code>setupSheets</code> sudah dijalankan sekali di editor Apps Script.
       </p>
     </div>
     <div class="fc" style="margin-top:14px;margin-bottom:0;">
       <div class="fc-t"><i class="fas fa-database"></i> Database Offline (Export)</div>
-      <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+      <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
         Untuk perangkat lain yang sama sekali tidak bisa online: sinkronkan semua data di sini (perangkat yang online), export jadi file, lalu import file itu di layar login perangkat yang bermasalah.
       </p>
-      <div id="sync-all-status-solo" style="display:none;font-size:.62rem;color:var(--TL);opacity:.7;margin-bottom:8px;"></div>
-      <div id="export-db-status-solo" style="display:none;font-size:.62rem;color:var(--G);margin-bottom:8px;"></div>
+      <div id="sync-all-status-solo" style="display:none;font-size:0.719rem;color:var(--TL);opacity:.7;margin-bottom:8px;"></div>
+      <div id="export-db-status-solo" style="display:none;font-size:0.719rem;color:var(--G);margin-bottom:8px;"></div>
       <div class="fa-r">
         <button class="btn btn-o btn-sm" id="sync-all-btn-solo" onclick="runSyncAllOfflineData('-solo')"><i class="fas fa-cloud-download-alt"></i> Sinkronkan Semua Data</button>
         <button class="btn btn-g btn-sm" id="export-db-btn-solo" onclick="exportOfflineDb('-solo')"><i class="fas fa-file-export"></i> Export ke File (.json)</button>
       </div>
     </div>
+    <div class="fc" id="excel-master-card-solo" style="display:none;margin-top:14px;margin-bottom:0;">
+      <div class="fc-t"><i class="fas fa-file-excel"></i> Excel Master (Aplikasi Desktop)</div>
+      <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+        Sinkronisasi database lokal aplikasi ini dengan file Excel Master (.xlsx) di komputer — bisa dilakukan di sini, TANPA login, dan berlaku untuk semua pengguna aplikasi ini.
+      </p>
+      <div class="si" style="margin-bottom:8px;"><div><div class="si-k">Database Lokal</div><div class="si-s" id="excel-db-path-solo">-</div></div></div>
+      <div class="fgrp" style="margin-bottom:10px;">
+        <label class="flbl">Lokasi File Excel Master (.xlsx)</label>
+        <input class="fin" id="excel-path-solo" type="text" placeholder="D:\WRP_Local.xlsx">
+        <p style="font-size:0.696rem;color:var(--TL);opacity:.6;margin-top:4px;" id="excel-path-status-solo">-</p>
+      </div>
+      <div class="fa-r" style="margin-bottom:10px;">
+        <button class="btn btn-g btn-sm" onclick="excelSavePath('-solo')"><i class="fas fa-save"></i> Simpan Lokasi</button>
+        <button class="btn btn-o btn-sm" onclick="excelDoSync('-solo')"><i class="fas fa-arrows-rotate"></i> Sync ke Excel Master</button>
+        <button class="btn btn-o btn-sm" onclick="excelDoImport()"><i class="fas fa-cloud-arrow-down"></i> Tarik dari Excel Master</button>
+      </div>
+      <div class="dvd"></div>
+      <div class="si-k" style="margin-bottom:6px;">Import Backup JSON (Offline)</div>
+      <p style="font-size:0.696rem;color:var(--TL);opacity:.6;margin-bottom:8px;line-height:1.6;">
+        Untuk PC yang lama tidak sync ke Excel Master dan cuma punya file ekspor cache offline dashboard (mis. <code>wrp-offline-....json</code>). Setelah import, jalankan "Sync ke Excel Master" supaya hasilnya ikut tertulis ke file .xlsx.
+      </p>
+      <div class="fa-r">
+        <input type="file" id="excel-backup-file-solo" accept="application/json,.json" style="display:none;" onchange="excelBackupFileChosen(this,'-solo')">
+        <button class="btn btn-o btn-sm" onclick="document.getElementById('excel-backup-file-solo').click()"><i class="fas fa-folder-open"></i> Pilih File .json</button>
+        <button class="btn btn-g btn-sm" id="excel-backup-import-btn-solo" onclick="excelDoImportBackupJson('-solo')" disabled><i class="fas fa-file-import"></i> Import</button>
+      </div>
+      <div id="excel-backup-filename-solo" style="font-size:0.696rem;color:var(--TL);opacity:.7;margin-top:6px;"></div>
+    </div>
     <div class="fc" style="margin-top:14px;margin-bottom:0;">
       <div class="fc-t"><i class="fas fa-clock-rotate-left"></i> Antrian Offline (Belum Terkirim)</div>
-      <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+      <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
         Perubahan yang tersimpan di perangkat ini saat tidak ada koneksi (dari sesi login sebelumnya) akan terlihat di sini dan bisa dikirim manual kapan saja, tanpa perlu login dulu.
       </p>
       <div id="outbox-summary-solo" class="tw" style="max-height:200px;margin-bottom:10px;"><div class="empty-state" style="padding:14px;"><i class="fas fa-circle-notch spin"></i>Memuat antrian...</div></div>
@@ -335,6 +426,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
         <button class="btn btn-g btn-sm" onclick="flushOutbox(true)"><i class="fas fa-paper-plane"></i> Kirim Sekarang</button>
         <button class="btn btn-r btn-sm" onclick="confirmClearOutbox('-solo')"><i class="fas fa-trash"></i> Hapus Antrian</button>
       </div>
+    </div>
     </div>
   </div>
 </div>
@@ -366,18 +458,18 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
   <div class="sb-user">
     <div class="u-av" id="u-av">--</div>
     <div><div class="user-name" id="u-name">-</div><div class="user-role" id="u-role">-</div></div>
-    <i class="fas fa-sign-out-alt" style="margin-left:auto;color:var(--TL);opacity:.4;font-size:.8rem;cursor:pointer;" onclick="doLogout()" title="Logout"></i>
+    <i class="fas fa-sign-out-alt" style="margin-left:auto;color:var(--TL);opacity:.4;font-size:0.928rem;cursor:pointer;" onclick="doLogout()" title="Logout"></i>
   </div>
 </aside>
 
 <main class="main" id="main">
 
-<div id="offline-banner" style="display:none;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:.68rem;color:var(--Y);">
+<div id="offline-banner" style="display:none;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.4);border-radius:14px;padding:8px 14px;margin-bottom:12px;font-size:0.789rem;color:var(--Y);">
   <i class="fas fa-wifi-slash"></i>
   <span id="offline-banner-txt">Mode Offline — menampilkan data cache tersimpan.</span>
 </div>
 
-<div id="outbox-banner" style="display:none;align-items:center;gap:9px;justify-content:space-between;background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(59,130,246,.03));border:1px solid rgba(59,130,246,.4);border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:.68rem;color:#60a5fa;flex-wrap:wrap;">
+<div id="outbox-banner" style="display:none;align-items:center;gap:9px;justify-content:space-between;background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(59,130,246,.03));border:1px solid rgba(59,130,246,.4);border-radius:14px;padding:8px 14px;margin-bottom:12px;font-size:0.789rem;color:#60a5fa;flex-wrap:wrap;">
   <div style="display:flex;align-items:center;gap:9px;"><i class="fas fa-clock-rotate-left"></i><span id="outbox-banner-txt">0 perubahan menunggu dikirim ke backend.</span></div>
   <button class="btn btn-o btn-sm" onclick="flushOutbox(false)"><i class="fas fa-paper-plane"></i> Kirim Sekarang</button>
 </div>
@@ -441,21 +533,26 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
   <div class="topbar"><div class="tb-left"><button class="tog-sb" onclick="toggleSB()"><i class="fas fa-bars"></i></button><div><h1>Import Produksi</h1><p>Upload file Excel (.xlsx) untuk dimasukkan ke sheet Produksi</p></div></div></div>
   <div class="conn-bar-slot"></div>
   <div class="fc"><div class="fc-t"><i class="fas fa-file-upload"></i> Upload File Excel</div>
-    <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:11px;line-height:1.6;">
-      File harus berisi kolom: <b>PT, KEBUN, AFD, LUAS, PKK, SPH, BUDGET_TON, SENSUS_TON, BUDGET_KG, SENSUS_KG, JJG, KG, HK, HA_PANEN, TON, BJR, ROTASI, TON_HA, JJG_PKK, OUTPUT_JJG, OUTPUT_KG, BULAN, TAHUN, TANGGAL</b> pada baris pertama (header). Kolom <b>TANGGAL</b> (format YYYY-MM-DD) opsional namun diperlukan untuk grafik tren harian.
-    </p>
+    <div class="fgrp" style="margin-bottom:11px;">
+      <label class="flbl">Sheet Tujuan</label>
+      <select class="fsl" id="imp-sheet" onchange="onImportSheetChange()"><option value="">— memuat daftar sheet —</option></select>
+    </div>
+    <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:8px;line-height:1.6;" id="imp-cols-info">Pilih sheet tujuan terlebih dahulu untuk melihat kolom yang dibutuhkan.</p>
+    <div class="fa-r" style="margin-bottom:11px;">
+      <button class="btn btn-o btn-sm" onclick="downloadImportTemplate()"><i class="fas fa-file-arrow-down"></i> Unduh Template (.xlsx)</button>
+    </div>
     <div class="fgrp" style="margin-bottom:12px;"><label class="flbl">File Excel (.xlsx)</label>
       <div class="uz" onclick="document.getElementById('fi').click()">
-        <i class="fas fa-cloud-upload-alt" style="font-size:1.8rem;color:var(--G);margin-bottom:7px;display:block;"></i>
-        <p style="font-size:.78rem;color:var(--TL);opacity:.68;">Drag & drop atau <span style="color:var(--G);font-weight:600;">klik browse</span></p>
-        <p style="font-size:.6rem;color:var(--TL);opacity:.4;margin-top:3px;">.xlsx / .xls · Diparsing langsung di browser (SheetJS)</p>
+        <i class="fas fa-cloud-upload-alt" style="font-size:2.088rem;color:var(--G);margin-bottom:7px;display:block;"></i>
+        <p style="font-size:0.905rem;color:var(--TL);opacity:.68;">Drag & drop atau <span style="color:var(--G);font-weight:600;">klik browse</span></p>
+        <p style="font-size:0.696rem;color:var(--TL);opacity:.4;margin-top:3px;">.xlsx / .xls · Diparsing langsung di browser (SheetJS) · data akan DITAMBAHKAN, bukan menimpa</p>
         <input type="file" id="fi" accept=".xlsx,.xls" style="display:none;" onchange="handleFile(this)">
       </div>
-      <div id="fi-info" style="display:none;margin-top:7px;font-size:.72rem;color:var(--G);"></div>
+      <div id="fi-info" style="display:none;margin-top:7px;font-size:0.835rem;color:var(--G);"></div>
     </div>
     <div id="prev-area" style="display:none;margin-bottom:12px;">
       <div class="dvd"></div>
-      <div style="font-size:.72rem;color:var(--Au);margin-bottom:7px;font-weight:600;"><i class="fas fa-eye"></i> Preview Data (<span id="prev-count">0</span> baris terdeteksi)</div>
+      <div style="font-size:0.835rem;color:var(--Au);margin-bottom:7px;font-weight:600;"><i class="fas fa-eye"></i> Preview Data (<span id="prev-count">0</span> baris terdeteksi)</div>
       <div class="tw" style="max-height:220px;"><table class="tbl" id="prev-table"></table></div>
     </div>
     <div class="fa-r">
@@ -477,7 +574,12 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
   <div class="cc" style="margin-bottom:12px;">
     <div class="sb-row"><input class="fin" type="text" placeholder="🔍 Cari kode blok, estate, AFD..." id="blok-search" oninput="filterBlokTable()">
     <button class="btn btn-o btn-sm" onclick="loadBlok()"><i class="fas fa-sync-alt"></i> Muat Ulang</button></div>
-    <div class="tw" style="max-height:420px;"><table class="tbl"><thead><tr><th>#</th><th>Kode</th><th>Estate</th><th>AFD</th><th>Luas (Ha)</th><th>Thn Tanam</th><th>Jenis</th><th>Populasi</th><th>Status</th><th class="role-write-col">Aksi</th></tr></thead><tbody id="blok-tb"></tbody></table></div>
+    <div class="tw"><table class="tbl"><thead><tr><th>#</th><th>AFD</th><th>Code Blok</th><th>TT</th><th>Jenis Tanah</th><th>Topografi Areal</th><th>LE-Ha</th><th>LE-Pkk</th><th>SPH</th><th>Alert</th><th class="role-write-col">Aksi</th></tr></thead><tbody id="blok-tb"></tbody></table></div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px;" id="blok-pg-wrap">
+      <button class="btn btn-o btn-sm" onclick="blokPrevPage()" id="blok-pg-prev"><i class="fas fa-chevron-left"></i> Sebelumnya</button>
+      <span style="font-size:0.789rem;color:var(--TL);opacity:.75;" id="blok-pg-info">Halaman 1</span>
+      <button class="btn btn-o btn-sm" onclick="blokNextPage()" id="blok-pg-next">Berikutnya <i class="fas fa-chevron-right"></i></button>
+    </div>
   </div>
   <div class="pf">v2.1 Connected Edition · Google Sheets Backend</div>
 </section>
@@ -487,10 +589,51 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
   <div class="topbar"><div class="tb-left"><button class="tog-sb" onclick="toggleSB()"><i class="fas fa-bars"></i></button><div><h1>Master Budget</h1><p>Target anggaran — tab "Budget" pada sheet History Produksi</p></div></div>
   <div class="h-actions"><button class="btn btn-g role-write-only" onclick="openM('m-budget')"><i class="fas fa-plus"></i> Set Budget</button><button class="btn btn-o" onclick="exportCSV(budgetRows,'master_budget')"><i class="fas fa-file-csv"></i> Export CSV</button></div></div>
   <div class="conn-bar-slot"></div>
-  <div class="cc">
+
+  <div class="cc rm-console">
+    <div class="rm-head">
+      <div class="rm-head-badge"><i class="fas fa-calculator"></i></div>
+      <div>
+        <h3>Kalkulator Rekomendasi Material per Blok</h3>
+        <p>Ketik Code Blok untuk mengambil otomatis Luas (Ha) &amp; Jumlah Pokok dari Master Blok, lalu pilih material dan pekerjaan untuk menghitung total kebutuhan material.</p>
+      </div>
+    </div>
+    <div class="fg fg2" style="position:relative;z-index:1;">
+      <div class="fgrp"><label class="flbl"><i class="fas fa-map-pin"></i> Code Blok</label><input class="fin" id="rm-blok" list="rm-blok-list" placeholder="A45" oninput="rmLookupBlok()"><datalist id="rm-blok-list"></datalist></div>
+      <div class="fgrp"><label class="flbl"><i class="fas fa-circle-info"></i> Info Blok</label><div class="rm-chips" id="rm-blok-info"><span class="rm-chip rm-chip-empty"><i class="fas fa-hourglass-half"></i> Belum ada blok dipilih</span></div></div>
+      <div class="fgrp"><label class="flbl"><i class="fas fa-flask"></i> Material</label><select class="fsl" id="rm-material" onchange="rmFillPekerjaan();rmCalc()"><option value="">— pilih material —</option></select></div>
+      <div class="fgrp"><label class="flbl"><i class="fas fa-person-digging"></i> Pekerjaan</label><select class="fsl" id="rm-pekerjaan" onchange="rmCalc()"><option value="">— pilih pekerjaan —</option></select></div>
+      <div class="fgrp"><label class="flbl"><i class="fas fa-vial"></i> Dosis</label><input class="fin" id="rm-dosis" readonly placeholder="—"></div>
+      <div class="fgrp"><label class="flbl"><i class="fas fa-scale-balanced"></i> Pengali <span style="opacity:.55;font-weight:400;">(otomatis, ikut data material)</span></label><div class="rm-pengali-badge" id="rm-pengali-badge"><i class="fas fa-minus"></i> —</div></div>
+    </div>
+    <div class="rm-total-panel">
+      <div class="rm-total-lbl"><i class="fas fa-bolt"></i> Total Kebutuhan Material</div>
+      <div class="rm-total-val" id="rm-total">-</div>
+    </div>
+
+    <div class="dvd" style="margin:16px 0;"></div>
+    <h3 style="font-size:1.044rem;margin:0 0 4px;"><i class="fas fa-list-check"></i> Rekomendasi Material di Blok Ini</h3>
+    <p style="font-size:0.754rem;color:var(--TL);opacity:.6;margin-bottom:10px;" id="rm-reko-note">Ketik Code Blok di atas untuk melihat semua rekomendasi pekerjaan &amp; material sesuai tahun tanam blok tersebut (dihitung otomatis pakai Ha atau Pokok sesuai jenis pekerjaannya).</p>
+    <div class="tw"><table class="tbl"><thead><tr><th>Pekerjaan</th><th>Material</th><th>Dosis</th><th>Satuan</th><th>Pengali</th><th>Total Qty</th></tr></thead><tbody id="rm-reko-tb"><tr><td colspan="6"><div class="empty-state"><i class="fas fa-arrow-up"></i>Belum ada blok dipilih.</div></td></tr></tbody></table></div>
+    <div style="text-align:center;margin-top:10px;display:none;" id="rm-reko-more-wrap"><button class="btn btn-o btn-sm" onclick="toggleRekoExpand()" id="rm-reko-more-btn">Tampilkan Semua</button></div>
+  </div>
+
+  <div class="cc" style="margin-top:18px;">
     <div class="sb-row"><select class="fsl" id="bud-tahun-f" style="width:110px;" onchange="loadBudget()"></select>
     <button class="btn btn-o btn-sm" onclick="loadBudget()"><i class="fas fa-sync-alt"></i> Muat Ulang</button></div>
     <div class="tw" style="max-height:420px;"><table class="tbl"><thead><tr><th>Tahun</th><th>Bulan</th><th>Estate</th><th>Budget (Kg)</th><th>HK Rencana</th><th class="role-write-col">Aksi</th></tr></thead><tbody id="budget-tb"></tbody></table></div>
+  </div>
+
+  <div class="cc" style="margin-top:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+      <h3 style="font-size:1.044rem;margin:0;"><i class="fas fa-database"></i> Database Rekomendasi Material (Semua Blok/Pekerjaan)</h3>
+      <div class="fa-r" style="margin:0;">
+        <input class="fin" id="bm-search" placeholder="Cari pekerjaan/material..." style="width:220px;" oninput="renderBudgetMaterialTable()">
+        <button class="btn btn-o btn-sm" onclick="exportCSV(budgetMaterialRows,'rekomendasi_material')"><i class="fas fa-file-csv"></i> Export CSV</button>
+      </div>
+    </div>
+    <div class="tw"><table class="tbl"><thead><tr><th>Pekerjaan</th><th>Material</th><th>Satuan</th><th>Dosis</th><th>Tahun Tanam</th><th>Status</th><th>Deskripsi</th></tr></thead><tbody id="bm-tb"></tbody></table></div>
+    <div style="text-align:center;margin-top:10px;" id="bm-more-wrap"><button class="btn btn-o btn-sm" onclick="toggleBudgetMaterialExpand()" id="bm-more-btn">Tampilkan Semua</button></div>
   </div>
   <div class="pf">v2.1 Connected Edition · Google Sheets Backend</div>
 </section>
@@ -558,7 +701,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
   <div class="gr2">
     <div>
       <div class="fc"><div class="fc-t"><i class="fas fa-plug"></i> Koneksi Backend</div>
-        <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:12px;line-height:1.7;">
+        <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:12px;line-height:1.7;">
           Tempel URL deployment Web App dari Google Apps Script Anda (diakhiri <code>/exec</code>).
         </p>
         <div class="fgrp" style="margin-bottom:10px;"><label class="flbl">Apps Script Web App URL</label><input class="fin" id="cfg-url" type="text" placeholder="https://script.google.com/macros/s/AKfycb.../exec"></div>
@@ -569,12 +712,76 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
         <div class="dvd"></div>
         <div class="conn-bar-slot"></div>
       </div>
-    </div>
-    <div>
+      <div class="fc" id="blok-dim-card">
+        <div class="fc-t"><i class="fas fa-tags"></i> Kategori Dimensi Blok</div>
+        <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+          Pilihan dropdown yang muncul saat Tambah/Edit di halaman Master Blok (Status, Jenis Tanah, Topografi Areal). Tambah atau hapus kategori sesuai kebutuhan kebun — tidak perlu ubah kode aplikasi.
+        </p>
+        <div style="margin-bottom:14px;">
+          <div style="font-size:0.789rem;font-weight:600;margin-bottom:6px;">Status Blok</div>
+          <div id="blok-dim-STATUS-chips" style="margin-bottom:8px;"></div>
+          <div class="fa-r">
+            <input class="fin" id="blok-dim-STATUS-new" placeholder="Nama kategori baru, mis. Konversi" style="max-width:240px;" onkeydown="if(event.key==='Enter'){event.preventDefault();addBlokDimCategory('STATUS');}">
+            <button class="btn btn-g btn-sm" onclick="addBlokDimCategory('STATUS')"><i class="fas fa-plus"></i> Tambah</button>
+          </div>
+        </div>
+        <div class="dvd" style="margin:10px 0;"></div>
+        <div style="margin-bottom:14px;">
+          <div style="font-size:0.789rem;font-weight:600;margin-bottom:6px;">Jenis Tanah</div>
+          <div id="blok-dim-JENIS_TANAH-chips" style="margin-bottom:8px;"></div>
+          <div class="fa-r">
+            <input class="fin" id="blok-dim-JENIS_TANAH-new" placeholder="Nama kategori baru, mis. Aluvial" style="max-width:240px;" onkeydown="if(event.key==='Enter'){event.preventDefault();addBlokDimCategory('JENIS_TANAH');}">
+            <button class="btn btn-g btn-sm" onclick="addBlokDimCategory('JENIS_TANAH')"><i class="fas fa-plus"></i> Tambah</button>
+          </div>
+        </div>
+        <div class="dvd" style="margin:10px 0;"></div>
+        <div>
+          <div style="font-size:0.789rem;font-weight:600;margin-bottom:6px;">Topografi Areal</div>
+          <div id="blok-dim-TOPOGRAFI_AREAL-chips" style="margin-bottom:8px;"></div>
+          <div class="fa-r">
+            <input class="fin" id="blok-dim-TOPOGRAFI_AREAL-new" placeholder="Nama kategori baru, mis. Lembah" style="max-width:240px;" onkeydown="if(event.key==='Enter'){event.preventDefault();addBlokDimCategory('TOPOGRAFI_AREAL');}">
+            <button class="btn btn-g btn-sm" onclick="addBlokDimCategory('TOPOGRAFI_AREAL')"><i class="fas fa-plus"></i> Tambah</button>
+          </div>
+        </div>
+      </div>
       <div class="fc"><div class="fc-t"><i class="fas fa-user-cog"></i> Sesi Saat Ini</div>
         <div class="si"><div><div class="si-k" id="set-uname">-</div><div class="si-s" id="set-urole">-</div></div></div>
         <div class="fa-r" style="margin-top:10px;"><button class="btn btn-r btn-sm" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </div>
+      <!-- Panel ini HANYA muncul kalau dashboard sedang dibuka lewat aplikasi
+           desktop WRP (backend lokal di 127.0.0.1), lihat probeExcelPanel().
+           Tidak ada pembatasan role: semua user (termasuk Viewer) yang buka
+           aplikasi desktop bisa melihat & memakai panel ini. -->
+      <div class="fc" id="excel-master-card" style="display:none;">
+        <div class="fc-t"><i class="fas fa-file-excel"></i> Excel Master (Aplikasi Desktop)</div>
+        <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+          Sinkronisasi database lokal aplikasi ini dengan file Excel Master (.xlsx) di komputer. Dulu diatur lewat tombol terpisah di jendela aplikasi; sekarang semuanya di sini supaya semua pengguna bisa mengakses lewat satu tempat.
+        </p>
+        <div class="si" style="margin-bottom:8px;"><div><div class="si-k">Database Lokal</div><div class="si-s" id="excel-db-path">-</div></div></div>
+        <div class="fgrp" style="margin-bottom:10px;">
+          <label class="flbl">Lokasi File Excel Master (.xlsx)</label>
+          <input class="fin" id="excel-path" type="text" placeholder="D:\WRP_Local.xlsx">
+          <p style="font-size:0.696rem;color:var(--TL);opacity:.6;margin-top:4px;" id="excel-path-status">-</p>
+        </div>
+        <div class="fa-r" style="margin-bottom:10px;">
+          <button class="btn btn-g btn-sm" onclick="excelSavePath()"><i class="fas fa-save"></i> Simpan Lokasi</button>
+          <button class="btn btn-o btn-sm" onclick="excelDoSync()"><i class="fas fa-arrows-rotate"></i> Sync ke Excel Master</button>
+          <button class="btn btn-o btn-sm" onclick="excelDoImport()"><i class="fas fa-cloud-arrow-down"></i> Tarik dari Excel Master</button>
+        </div>
+        <div class="dvd"></div>
+        <div class="si-k" style="margin-bottom:6px;">Import Backup JSON (Offline)</div>
+        <p style="font-size:0.696rem;color:var(--TL);opacity:.6;margin-bottom:8px;line-height:1.6;">
+          Untuk PC yang lama tidak sync ke Excel Master dan cuma punya file ekspor cache offline dashboard (mis. <code>wrp-offline-....json</code>). Setelah import, jalankan "Sync ke Excel Master" supaya hasilnya ikut tertulis ke file .xlsx.
+        </p>
+        <div class="fa-r">
+          <input type="file" id="excel-backup-file" accept="application/json,.json" style="display:none;" onchange="excelBackupFileChosen(this)">
+          <button class="btn btn-o btn-sm" onclick="document.getElementById('excel-backup-file').click()"><i class="fas fa-folder-open"></i> Pilih File .json</button>
+          <button class="btn btn-g btn-sm" id="excel-backup-import-btn" onclick="excelDoImportBackupJson()" disabled><i class="fas fa-file-import"></i> Import</button>
+        </div>
+        <div id="excel-backup-filename" style="font-size:0.696rem;color:var(--TL);opacity:.7;margin-top:6px;"></div>
+      </div>
+    </div>
+    <div>
       <div class="fc"><div class="fc-t"><i class="fas fa-palette"></i> Tampilan</div>
         <div class="si"><div><div class="si-k">Sidebar Kompak</div><div class="si-s">Tampilan ikon saja</div></div><button class="tog" onclick="toggleSB();this.classList.toggle('on')"></button></div>
         <div class="dvd"></div>
@@ -599,10 +806,10 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
             <div class="theme-name">Terang</div>
           </div>
         </div>
-        <p style="font-size:.6rem;color:var(--TL);opacity:.5;margin-top:8px;line-height:1.6;">Pilihan tema tersimpan otomatis di perangkat ini dan langsung berlaku untuk semua halaman.</p>
+        <p style="font-size:0.696rem;color:var(--TL);opacity:.5;margin-top:8px;line-height:1.6;">Pilihan tema tersimpan otomatis di perangkat ini dan langsung berlaku untuk semua halaman.</p>
       </div>
       <div class="fc"><div class="fc-t"><i class="fas fa-database"></i> Cache Offline (SQLite)</div>
-        <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+        <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
           Setiap data yang berhasil dimuat saat online otomatis disimpan ke database SQLite lokal (sql.js) di perangkat/browser ini, sehingga dashboard tetap bisa dibuka saat tidak ada internet. Aplikasi (tampilan) juga tersimpan otomatis lewat Service Worker agar bisa dibuka tanpa koneksi sama sekali setelah pertama kali online.
         </p>
         <div id="cache-summary" class="tw" style="max-height:200px;margin-bottom:10px;"><div class="empty-state" style="padding:14px;"><i class="fas fa-circle-notch spin"></i>Memuat ringkasan cache...</div></div>
@@ -611,18 +818,18 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
           <button class="btn btn-r btn-sm" onclick="confirmClearCache()"><i class="fas fa-trash"></i> Hapus Semua Cache</button>
         </div>
         <div class="dvd"></div>
-        <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+        <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
           <b>Untuk perangkat yang sama sekali tidak bisa online</b> (mis. domain backend diblokir jaringan setempat): sinkronkan semua data di sini (perangkat yang online), lalu export jadi file dan kirim/import ke perangkat bermasalah lewat layar login.
         </p>
-        <div id="sync-all-status" style="display:none;font-size:.62rem;color:var(--TL);opacity:.7;margin-bottom:8px;"></div>
-        <div id="export-db-status" style="display:none;font-size:.62rem;color:var(--G);margin-bottom:8px;"></div>
+        <div id="sync-all-status" style="display:none;font-size:0.719rem;color:var(--TL);opacity:.7;margin-bottom:8px;"></div>
+        <div id="export-db-status" style="display:none;font-size:0.719rem;color:var(--G);margin-bottom:8px;"></div>
         <div class="fa-r">
           <button class="btn btn-o btn-sm" id="sync-all-btn" onclick="runSyncAllOfflineData()"><i class="fas fa-cloud-download-alt"></i> Sinkronkan Semua Data</button>
           <button class="btn btn-g btn-sm" id="export-db-btn" onclick="exportOfflineDb()"><i class="fas fa-file-export"></i> Export ke File (.json)</button>
         </div>
       </div>
       <div class="fc"><div class="fc-t"><i class="fas fa-clock-rotate-left"></i> Antrian Offline (Belum Terkirim)</div>
-        <p style="font-size:.68rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
+        <p style="font-size:0.789rem;color:var(--TL);opacity:.65;margin-bottom:10px;line-height:1.7;">
           Kalau Anda menambah/mengubah/menghapus data saat tidak ada koneksi ke backend, perubahan itu disimpan di sini dulu (bukan hilang) dan otomatis dikirim begitu koneksi kembali. Anda juga bisa kirim manual kapan saja.
         </p>
         <div id="outbox-summary" class="tw" style="max-height:200px;margin-bottom:10px;"><div class="empty-state" style="padding:14px;"><i class="fas fa-circle-notch spin"></i>Memuat antrian...</div></div>
@@ -641,7 +848,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 
 <!-- MODALS -->
 <div class="mo" id="m-input"><div class="md"><div class="md-h"><div class="md-t"><i class="fas fa-plus-circle"></i> Input Produksi Harian</div><button class="md-x" onclick="closeM('m-input')">✕</button></div>
-  <p style="font-size:.68rem;color:var(--TL);opacity:.6;margin-bottom:12px;line-height:1.6;">Data akan disimpan ke tab <b>"Harian"</b> di sheet History Produksi, dan langsung muncul di grafik Trend Produksi Harian Dashboard.</p>
+  <p style="font-size:0.789rem;color:var(--TL);opacity:.6;margin-bottom:12px;line-height:1.6;">Data akan disimpan ke tab <b>"Harian"</b> di sheet History Produksi, dan langsung muncul di grafik Trend Produksi Harian Dashboard.</p>
   <div class="fg fg2">
     <div class="fgrp"><label class="flbl">Tanggal *</label><input class="fin" id="hr-TANGGAL" type="date"></div>
     <div class="fgrp"><label class="flbl">Kebun *</label><input class="fin" id="hr-KEBUN" placeholder="KEBUN 1"></div>
@@ -665,7 +872,15 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
     <div class="fgrp"><label class="flbl">Jenis</label><input class="fin" id="bl-JENIS" placeholder="KS D×P PPKS"></div>
     <div class="fgrp"><label class="flbl">Populasi (Pohon)</label><input class="fin" id="bl-POPULASI" type="number" placeholder="0"></div>
     <div class="fgrp"><label class="flbl">Status</label><select class="fsl" id="bl-STATUS"><option>Produksi</option><option>TBM</option><option>Replanting</option></select></div>
+    <div class="fgrp"><label class="flbl">Code Blok</label><input class="fin" id="bl-CODE_BLOK" placeholder="A45"></div>
+    <div class="fgrp"><label class="flbl">TT (Tahun Tanam)</label><input class="fin" id="bl-TT" type="number" placeholder="2020"></div>
+    <div class="fgrp"><label class="flbl">Jenis Tanah</label><select class="fsl" id="bl-JENIS_TANAH"></select></div>
+    <div class="fgrp"><label class="flbl">Topografi Areal</label><select class="fsl" id="bl-TOPOGRAFI_AREAL"></select></div>
+    <div class="fgrp"><label class="flbl">LE-Ha</label><input class="fin" id="bl-LE-Ha" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="fgrp"><label class="flbl">LE-Pkk</label><input class="fin" id="bl-LE-Pkk" type="number" placeholder="0"></div>
+    <div class="fgrp"><label class="flbl">SPH</label><input class="fin" id="bl-SPH" type="number" step="0.01" placeholder="136"></div>
   </div>
+  <p style="font-size:0.719rem;color:var(--TL);opacity:.6;margin-top:2px;">Untuk isi massal semua kolom Master Blok (termasuk histori luas/pokok per tahun), gunakan halaman "Import Produksi" &rarr; pilih sheet <b>Blok</b>.</p>
   <div class="fa-r"><button class="btn btn-g" onclick="submitBlok()"><i class="fas fa-save"></i> Simpan</button><button class="btn btn-o" onclick="closeM('m-blok')">Batal</button></div>
 </div></div>
 
@@ -692,7 +907,7 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
 </div></div>
 
 <div class="mo" id="m-pks-harian"><div class="md" style="width:680px;"><div class="md-h"><div class="md-t"><i class="fas fa-industry"></i> Input Harian PKS</div><button class="md-x" type="button" onclick="closeM('m-pks-harian')">✕</button></div>
-  <p style="font-size:.68rem;color:var(--TL);opacity:.6;margin-bottom:12px;line-height:1.6;">Isi Tanggal sekali, lalu isi Actual untuk item yang relevan hari ini. Item yang dikosongkan tidak akan disimpan. Data masuk ke tab <b>"Harian"</b> di sheet DB PKS. Satuan terisi otomatis dan dapat dikoreksi.</p>
+  <p style="font-size:0.789rem;color:var(--TL);opacity:.6;margin-bottom:12px;line-height:1.6;">Isi Tanggal sekali, lalu isi Actual untuk item yang relevan hari ini. Item yang dikosongkan tidak akan disimpan. Data masuk ke tab <b>"Harian"</b> di sheet DB PKS. Satuan terisi otomatis dan dapat dikoreksi.</p>
   <div class="fg fg3" style="margin-bottom:14px;">
     <div class="fgrp"><label class="flbl">Tanggal *</label><input class="fin" id="ph-TANGGAL" type="date"></div>
     <div class="fgrp"><label class="flbl">Tahun</label><input class="fin" id="ph-TAHUN" type="number" placeholder="2026"></div>
@@ -714,7 +929,11 @@ body{font-family:'Roboto',sans-serif;background:var(--BG);color:var(--T);display
    STATE
 ════════════════════════════════════════════════════════════════════════ */
 let API_URL = '';
-const DEFAULT_API_URL = '<?= scriptUrl ?>'; // otomatis terisi URL deployment Apps Script ini sendiri
+// Diarahkan ke server lokal WRP.Desktop (Kestrel di dalam app WPF), menggantikan
+// URL Google Apps Script — lihat WRP.Desktop/LocalServer/LocalApiServer.cs (Port = 58822).
+// Kontrak request/response ?action=... dipertahankan sama persis, jadi baris ini
+// SATU-SATUNYA perubahan yang dibutuhkan di frontend.
+const DEFAULT_API_URL = 'http://127.0.0.1:58822/exec';
 let currentUser = null;
 let connStatus = 'unknown';
 let dashRows = [], blokRows = [], budgetRows = [], userRows = [], auditRows = [], pksRows = [], pksHarianRows = [];
@@ -1212,10 +1431,35 @@ function hideOfflineBanner(){
   if(el) el.style.display = 'none';
 }
 
+// Aplikasi desktop (WebView2) selalu memuat dashboard ini dari server lokal
+// di 127.0.0.1:58822 (lihat LocalApiServer.cs). Berbeda dengan versi
+// web/PWA (diakses lewat domain publik), profil WebView2 di desktop app
+// bersifat PERSISTEN antar-restart (LocalApplicationData\WRP\WebView2) —
+// kalau Service Worker app-shell aktif di situ, dia akan terus menyajikan
+// index.html/CSS/JS versi LAMA yang sudah di-cache walau file di disk sudah
+// diupdate & di-build ulang (ini penyebab tema baru "tidak muncul" walau
+// kode sudah benar). Desktop app sendiri sudah punya mekanisme offline asli
+// (SQLite lokal + Kestrel lokal), jadi Service Worker browser tidak
+// diperlukan sama sekali di konteks ini — untuk itu kita nonaktifkan &
+// bersihkan registrasi/cache lama secara aktif.
+function isDesktopApp(){
+  return location.hostname === '127.0.0.1' && location.port === '58822';
+}
+
 function registerServiceWorker(){
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Gagal mendaftarkan Service Worker (offline app-shell tidak aktif):', e));
+  if(!('serviceWorker' in navigator)) return;
+  if(isDesktopApp()){
+    // Bersihkan sisa registrasi/cache Service Worker dari build lama (kalau
+    // ada) supaya tidak ada app-shell basi yang "mengunci" tampilan.
+    navigator.serviceWorker.getRegistrations()
+      .then(regs => regs.forEach(r => r.unregister()))
+      .catch(()=>{});
+    if(window.caches && caches.keys){
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(()=>{});
+    }
+    return;
   }
+  navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Gagal mendaftarkan Service Worker (offline app-shell tidak aktif):', e));
 }
 
 async function refreshCacheSummary(){
@@ -1254,6 +1498,108 @@ function confirmClearOutbox(suffix=''){
   if(!confirm('Hapus SEMUA antrian offline yang belum terkirim? Perubahan yang belum tersinkron akan HILANG PERMANEN dan tidak akan pernah masuk ke Google Sheets. Gunakan ini hanya kalau Anda yakin datanya sudah tidak relevan lagi.')) return;
   outboxClearAll().then(()=>{ showToast('Antrian offline dihapus.'); refreshOutboxSummary(suffix); })
     .catch(e=>showToast('Gagal menghapus antrian: '+e.message, true));
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   EXCEL MASTER (AKSI LOKAL APLIKASI DESKTOP) — dulu tombol terpisah di
+   toolbar jendela WPF (⚙ Pengaturan Excel / ⇅ Sync / ⇩ Tarik / 📥 Import
+   Backup JSON), sekarang jadi satu panel di Settings supaya semua role bisa
+   pakai. Panel ini otomatis disembunyikan kalau dashboard sedang dibuka
+   lewat browser biasa / backend Google Apps Script (action excelGetInfo
+   cuma ada di backend lokal aplikasi desktop, lihat ActionRouter.cs).
+════════════════════════════════════════════════════════════════════════ */
+let _excelBackupJsonBySuffix = {};
+
+async function probeExcelPanel(){
+  const cards = [['excel-master-card',''], ['excel-master-card-solo','-solo']];
+  for(const [cardId, suffix] of cards){
+    const card = document.getElementById(cardId);
+    if(!card) continue;
+    card.style.display=''; // selalu tampilkan panel — jangan pernah disembunyikan diam-diam;
+                            // kalau ada masalah, tunjukkan pesannya di bawah supaya kelihatan.
+    try{
+      const r = await api('excelGetInfo', {}, 'GET');
+      if(!r || !r.ok){
+        document.getElementById('excel-path-status'+suffix).textContent =
+          'Gagal memuat info Excel Master: ' + (r&&r.error ? r.error : 'respons tidak valid dari server lokal.');
+        continue;
+      }
+      document.getElementById('excel-db-path'+suffix).textContent = r.dbPath || '-';
+      document.getElementById('excel-path'+suffix).value = r.excelPath || '';
+      document.getElementById('excel-path-status'+suffix).textContent = r.excelExists
+        ? 'File Excel Master sudah ada di lokasi ini.'
+        : 'File Excel Master belum ada di lokasi ini — klik "Sync ke Excel Master" untuk membuatnya.';
+    }catch(e){
+      // Tampilkan alasan gagalnya di layar (bukan cuma disembunyikan) supaya
+      // bisa ditelusuri — mis. server lokal belum siap, atau port beda.
+      const statusEl = document.getElementById('excel-path-status'+suffix);
+      if(statusEl) statusEl.innerHTML = '<span style="color:var(--R);">Tidak bisa terhubung ke server lokal aplikasi: '+escHtml(e.message)+'</span>';
+    }
+  }
+}
+
+async function excelSavePath(suffix=''){
+  const path = document.getElementById('excel-path'+suffix).value.trim();
+  if(!path){ showToast('Lokasi file belum diisi.', true); return; }
+  try{
+    const r = await api('excelSetPath', {path}, 'POST');
+    showToast(r.message || 'Lokasi Excel Master disimpan.');
+    probeExcelPanel();
+  }catch(e){ showToast('Gagal menyimpan lokasi: '+e.message, true); }
+}
+
+async function excelDoSync(suffix=''){
+  try{
+    const r = await api('excelSync', {}, 'POST');
+    showToast(r.message || 'Sync ke Excel Master selesai.', !r.ok);
+    probeExcelPanel();
+  }catch(e){ showToast('Gagal sync ke Excel Master: '+e.message, true); }
+}
+
+async function excelDoImport(){
+  if(!confirm('Ini akan menambah/menimpa data lokal dengan isi file Excel Master.\nLanjutkan?')) return;
+  try{
+    const r = await api('excelImport', {}, 'POST');
+    showToast(r.message || 'Tarik dari Excel Master selesai.', !r.ok);
+  }catch(e){ showToast('Gagal tarik dari Excel Master: '+e.message, true); }
+}
+
+function excelBackupFileChosen(input, suffix=''){
+  const file = input.files && input.files[0];
+  const nameEl = document.getElementById('excel-backup-filename'+suffix);
+  const btn = document.getElementById('excel-backup-import-btn'+suffix);
+  _excelBackupJsonBySuffix[suffix] = null;
+  btn.disabled = true;
+  if(!file){ nameEl.textContent=''; return; }
+  nameEl.textContent = 'File dipilih: '+file.name;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      _excelBackupJsonBySuffix[suffix] = JSON.parse(reader.result);
+      btn.disabled = false;
+    }catch(e){
+      nameEl.textContent = 'File "'+file.name+'" bukan JSON yang valid.';
+      showToast('File bukan JSON yang valid: '+e.message, true);
+    }
+  };
+  reader.onerror = ()=> showToast('Gagal membaca file: '+reader.error, true);
+  reader.readAsText(file);
+}
+
+async function excelDoImportBackupJson(suffix=''){
+  const backup = _excelBackupJsonBySuffix[suffix];
+  if(!backup){ showToast('Pilih file .json terlebih dahulu.', true); return; }
+  try{
+    const r = await api('importBackupJson', {backup}, 'POST');
+    const details = (r.details||[]).map(d=>'- '+d.sheet+': '+d.inserted+' baru, '+d.updated+' diperbarui'+(d.note?('\n    '+d.note):'')).join('\n');
+    const skipped = (r.skippedActions||[]).length ? ('\n\nAction yang dilewati (belum dipetakan ke tabel): '+r.skippedActions.join(', ')) : '';
+    showToast(r.message || 'Import backup selesai.', !r.ok);
+    if(details) alert((r.message||'')+'\n\n'+details+skipped+'\n\nJangan lupa klik "Sync ke Excel Master" supaya hasilnya ikut tertulis ke file .xlsx.');
+    document.getElementById('excel-backup-file'+suffix).value = '';
+    document.getElementById('excel-backup-filename'+suffix).textContent = '';
+    document.getElementById('excel-backup-import-btn'+suffix).disabled = true;
+    _excelBackupJsonBySuffix[suffix] = null;
+  }catch(e){ showToast('Gagal import backup: '+e.message, true); }
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -1420,6 +1766,7 @@ function openSoloSettings(){
   document.getElementById('solo-settings').style.display='flex';
   setConnUI(connStatus);
   if(typeof refreshOutboxSummary === 'function') refreshOutboxSummary('-solo');
+  if(typeof probeExcelPanel === 'function') probeExcelPanel();
 }
 function closeSoloSettings(){
   document.getElementById('solo-settings').style.display='none';
@@ -1546,6 +1893,90 @@ function showToast(msg,err=false){
   clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),3500);
 }
 function escHtml(s){ return String(s===undefined||s===null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// Parser angka yang aman terhadap format Indonesia (titik=ribuan, koma=desimal)
+// SEKALIGUS terhadap angka polos hasil <input type="number"> (yang selalu
+// pakai titik sebagai desimal, mis. "12.5"). Dipakai di Master Blok & 
+// kalkulator Master Budget supaya nilai seperti "12.5" Ha atau "0.5" dosis
+// tidak lagi terbaca 10x lebih besar (lihat catatan ParseNum di backend).
+// Kalau nilainya sudah berupa number (backend sudah mem-parsing-nya lebih
+// dulu), fungsi ini langsung meneruskannya apa adanya.
+function parseIdNum(v){
+  if(v===null || v===undefined || v==='') return 0;
+  if(typeof v === 'number') return isFinite(v) ? v : 0;
+  let s = String(v).trim();
+  if(s==='') return 0;
+  if(s.includes(',')){
+    s = s.replace(/\./g,'').replace(',', '.');
+  } else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)){
+    s = s.replace(/\./g,'');
+  }
+  const n = parseFloat(s);
+  return isFinite(n) ? n : 0;
+}
+
+// Ambil Luas (Ha) / Jumlah Pokok efektif dari satu baris Master Blok, dengan
+// fallback ke LUAS_HA/POPULASI kalau kolom "LE-Ha"/"LE-Pkk" kosong (0).
+// Backend (ActionRouter.cs -> GetBlok) sudah menghitung fallback yang sama,
+// TAPI itu cuma jalan saat data diambil LANGSUNG dari server. Kalau
+// halaman ini membaca dari cache offline (lihat cacheGet() / "Mode
+// Offline"), cache yang tersimpan dari SEBELUM fallback backend ada akan
+// tetap kosong selamanya sampai online & sync ulang. Makanya fallback yang
+// sama diduplikasi di sini juga, supaya Kalkulator Rekomendasi Material,
+// tabel Master Blok, dst tetap benar baik online maupun offline/cache lama.
+// _pickNum: cari nilai numerik pertama yang > 0 dari daftar kemungkinan nama
+// kolom, TANPA peduli huruf besar/kecil atau karakter pemisah (spasi/"-"/"_").
+// Perlu ini karena backend "online" (Google Apps Script) kadang mengirim
+// nama field yang sedikit berbeda dari backend lokal desktop (mis. "LE Ha"
+// vs "LE-Ha" vs "LE_HA") — kalau cuma dicocokkan persis, Info Blok akan
+// selalu tampil "0 Ha / 0 Pokok" walaupun datanya sebenarnya ada.
+function _pickNum(obj, candidates){
+  if(!obj) return 0;
+  const norm = k => String(k).toLowerCase().replace(/[^a-z0-9]/g,'');
+  const wanted = candidates.map(norm);
+  for(const key in obj){
+    if(wanted.includes(norm(key))){
+      const v = parseIdNum(obj[key]);
+      if(v > 0) return v;
+    }
+  }
+  return 0;
+}
+function blokHa(blok){
+  if(!blok) return 0;
+  return _pickNum(blok, ['LE-Ha','LE_Ha','LEHA','LUAS_HA','LUAS HA','LUAS','HA']);
+}
+function blokPkk(blok){
+  if(!blok) return 0;
+  return _pickNum(blok, ['LE-Pkk','LE_Pkk','LEPKK','POPULASI','POKOK','PKK','JUMLAH_POKOK']);
+}
+// Sama seperti _pickNum, tapi untuk kolom teks (Jenis Tanah, Topografi
+// Areal) — nama field ini juga kadang berbeda format antara backend online
+// (Google Apps Script) dan lokal, jadi tabel Master Blok bisa tampil kosong
+// walau datanya sebenarnya ada.
+function _pickStr(obj, candidates){
+  if(!obj) return '';
+  const norm = k => String(k).toLowerCase().replace(/[^a-z0-9]/g,'');
+  const wanted = candidates.map(norm);
+  for(const key in obj){
+    if(wanted.includes(norm(key))){
+      const v = obj[key];
+      if(v!==undefined && v!==null && String(v).trim()!=='') return String(v).trim();
+    }
+  }
+  return '';
+}
+function blokJenisTanah(blok){ return _pickStr(blok, ['JENIS_TANAH','JENIS TANAH','JENISTANAH']); }
+function blokTopografi(blok){ return _pickStr(blok, ['TOPOGRAFI_AREAL','TOPOGRAFI AREAL','TOPOGRAFIAREAL','TOPOGRAFI']); }
+// SPH kosong -> hitung dari Pokok/Ha (sama seperti fallback di ActionRouter.cs)
+// supaya kolom SPH & alert-nya tidak diam-diam kosong padahal Ha & Pokok ada.
+function blokSph(blok){
+  if(!blok) return 0;
+  const v = _pickNum(blok, ['SPH']);
+  if(v > 0) return v;
+  const ha = blokHa(blok), pkk = blokPkk(blok);
+  return (ha > 0 && pkk > 0) ? Math.round((pkk/ha)*100)/100 : 0;
+}
 
 /* ════════════════════════════════════════════════════════════════════════
    EXPORT
@@ -1736,7 +2167,7 @@ function renderExecAlertHtml(calc){
   const execHtml = `
     <div class="${boxCls}">
       <div class="bx-hdr">
-        <div class="bx-ttl ${ttlCls}"><i class="fas fa-circle" style="font-size:.5rem;"></i> Executive Alert</div>
+        <div class="bx-ttl ${ttlCls}"><i class="fas fa-circle" style="font-size:0.58rem;"></i> Executive Alert</div>
         <span class="bdg" style="${badgeStyle}"><i class="fas ${badgeIcon}"></i> ${badgeTxt}</span>
       </div>
       <div class="bx-main">${headline}</div>
@@ -1779,7 +2210,7 @@ function renderExecAlertHtml(calc){
         <div class="pb-row"><div class="pb-top"><span>Progress HKE (${calc.hkBerjalan}/${calc.HK_BULAN_STANDAR} HK)</span><span>${fmtP(calc.progressHKE)}</span></div><div class="pb-trk"><div class="pb-fill" style="width:${hkeW}%;background:var(--G);"></div></div></div>
         <div class="pb-row"><div class="pb-top"><span>Progress Produksi</span><span>${fmtP(calc.progressProd)}</span></div><div class="pb-trk"><div class="pb-fill" style="width:${pdW}%;background:${progClr};"></div></div></div>
       </div>
-      <p style="font-size:.67rem;color:var(--TL);opacity:.6;margin-top:8px;font-style:italic;">${noteMap[progStat]}</p>
+      <p style="font-size:0.777rem;color:var(--TL);opacity:.6;margin-top:8px;font-style:italic;">${noteMap[progStat]}</p>
     </div>`;
 
   return execHtml + progressHtml;
@@ -1816,19 +2247,19 @@ function renderDashboard(rows, harianRows, hasTanggalData, tahun, bulan){
     <div class="pbar"><div class="pbar-l"><i class="fas fa-calendar-alt"></i><div><div class="p-lbl">Periode Data</div><div class="p-date">${bulan?BULAN_NAMA[bulan]:'Semua Bulan'} ${tahun}</div></div></div><span class="bdg bdg-g">${rows.length} baris dari Sheet</span></div>
     ${renderExecAlertHtml(calc)}
     <div class="kg7">
-      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-seedling" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Total JJG</div><div class="kv">${Math.round(totJJG).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-weight-hanging" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Total KG</div><div class="kv w">${Math.round(totKG).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-box-open" style="color:var(--R);font-size:.7rem;"></i></div><div class="klbl">Restan KG</div><div class="kv r">${Math.round(totRestan).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(59,130,246,.15);"><i class="fas fa-chart-pie" style="color:var(--BL);font-size:.7rem;"></i></div><div class="klbl">Sensus KG</div><div class="kv b">${Math.round(totSensus).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-percentage" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Achievement</div><div class="kv ${ach>=95?'':'y'}">${ach.toFixed(1)}%</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(245,158,11,.15);"><i class="fas fa-balance-scale" style="color:var(--Y);font-size:.7rem;"></i></div><div class="klbl">Rata BJR</div><div class="kv">${avgBJR.toFixed(2)} Kg</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-users" style="color:var(--R);font-size:.7rem;"></i></div><div class="klbl">Total HK</div><div class="kv r">${Math.round(totHK).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-seedling" style="color:var(--G);font-size:0.812rem;"></i></div><div class="klbl">Total JJG</div><div class="kv">${Math.round(totJJG).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-weight-hanging" style="color:var(--G);font-size:0.812rem;"></i></div><div class="klbl">Total KG</div><div class="kv w">${Math.round(totKG).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-box-open" style="color:var(--R);font-size:0.812rem;"></i></div><div class="klbl">Restan KG</div><div class="kv r">${Math.round(totRestan).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(59,130,246,.15);"><i class="fas fa-chart-pie" style="color:var(--BL);font-size:0.812rem;"></i></div><div class="klbl">Sensus KG</div><div class="kv b">${Math.round(totSensus).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-percentage" style="color:var(--G);font-size:0.812rem;"></i></div><div class="klbl">Achievement</div><div class="kv ${ach>=95?'':'y'}">${ach.toFixed(1)}%</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(245,158,11,.15);"><i class="fas fa-balance-scale" style="color:var(--Y);font-size:0.812rem;"></i></div><div class="klbl">Rata BJR</div><div class="kv">${avgBJR.toFixed(2)} Kg</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-users" style="color:var(--R);font-size:0.812rem;"></i></div><div class="klbl">Total HK</div><div class="kv r">${Math.round(totHK).toLocaleString('id-ID')}</div></div>
     </div>
     ${hasTanggalData ? `<div class="cc"><div class="cc-t"><i class="fas fa-chart-area"></i> Trend Produksi & Restan KG Harian</div><div id="ch-dh"></div></div>` :
       `<div class="cc"><div class="cc-t"><i class="fas fa-chart-area"></i> Trend Produksi Harian</div><div class="empty-state"><i class="fas fa-calendar-xmark"></i>Belum ada data dengan kolom TANGGAL terisi.<br>Isi kolom Tanggal saat Input Manual / Import Excel agar grafik ini tampil.</div></div>`}
     <div class="gr2">
       <div class="cc"><div class="cc-t"><i class="fas fa-building"></i> Aktual vs Budget per Kebun</div><div id="ch-de"></div></div>
-      <div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table"></i> Detail per AFD</span><span style="font-size:.6rem;opacity:.5;">${afdArr.length} AFD</span></div>
+      <div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table"></i> Detail per AFD</span><span style="font-size:0.696rem;opacity:.5;">${afdArr.length} AFD</span></div>
         <div class="tw" style="max-height:240px;"><table class="tbl"><thead><tr><th>Kebun</th><th>AFD</th><th>Aktual (Kg)</th><th>Budget (Kg)</th><th>Ach%</th></tr></thead><tbody>
         ${afdArr.map(r=>{const p=r.b>0?(r.ac/r.b*100):0; const cl=p>=95?'g':p>=85?'wd':'bd';
           return `<tr><td>${escHtml(r.kebun)}</td><td>${escHtml(r.afd)}</td><td>${Math.round(r.ac).toLocaleString('id-ID')}</td><td>${Math.round(r.b).toLocaleString('id-ID')}</td><td class="${cl}">${p.toFixed(1)}%</td></tr>`;
@@ -1839,13 +2270,13 @@ function renderDashboard(rows, harianRows, hasTanggalData, tahun, bulan){
     <div class="cc">
       <div class="cc-t">
         <span class="collapse-toggle" id="raw-toggle" onclick="toggleRawTable()"><i class="fas fa-chevron-right"></i> <i class="fas fa-table-list"></i> Data Mentah (Raw rows dari Sheet) — klik untuk tampilkan</span>
-        <span style="font-size:.6rem;opacity:.5;">${rows.length} baris</span>
+        <span style="font-size:0.696rem;opacity:.5;">${rows.length} baris</span>
       </div>
       <div id="raw-table-wrap" style="display:none;">
         <div class="tw" style="max-height:280px;"><table class="tbl"><thead><tr><th>Kebun</th><th>AFD</th><th>Tanggal</th><th>Luas</th><th>JJG</th><th>KG</th><th>HK</th><th>BJR</th><th>Budget KG</th><th>Bulan</th><th>Tahun</th></tr></thead><tbody>
         ${rows.slice(0,200).map(r=>`<tr><td>${escHtml(r.KEBUN)}</td><td>${escHtml(r.AFD)}</td><td>${escHtml(r.TANGGAL||'-')}</td><td>${r.LUAS}</td><td>${Math.round(r.JJG)}</td><td>${Math.round(r.KG).toLocaleString('id-ID')}</td><td>${r.HK}</td><td>${r.BJR}</td><td>${Math.round(r.BUDGET_KG).toLocaleString('id-ID')}</td><td>${BULAN_NAMA[r.BULAN]||r.BULAN}</td><td>${r.TAHUN}</td></tr>`).join('')}
         </tbody></table></div>
-        ${rows.length>200?`<p style="font-size:.62rem;opacity:.5;margin-top:6px;">Menampilkan 200 dari ${rows.length} baris. Gunakan Export CSV untuk data lengkap.</p>`:''}
+        ${rows.length>200?`<p style="font-size:0.719rem;opacity:.5;margin-top:6px;">Menampilkan 200 dari ${rows.length} baris. Gunakan Export CSV untuk data lengkap.</p>`:''}
       </div>
     </div>
   `;
@@ -1976,19 +2407,19 @@ function renderPerKebun(rows, harianRows, hasTanggalData, tahun, bulan){
     <div class="pbar"><div class="pbar-l"><i class="fas fa-city"></i><div><div class="p-lbl">Periode Data</div><div class="p-date">${bulan?BULAN_NAMA[bulan]:'Semua Bulan'} ${tahun}</div></div></div><span class="bdg bdg-g">${rows.length} baris dari Sheet · ${kebunArr.length} kebun</span></div>
     ${renderExecAlertHtml(calc)}
     <div class="kg7">
-      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-seedling" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Total JJG</div><div class="kv">${Math.round(totJJG).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-weight-hanging" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Total KG</div><div class="kv w">${Math.round(totKG).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-box-open" style="color:var(--R);font-size:.7rem;"></i></div><div class="klbl">Restan KG</div><div class="kv r">${Math.round(totRestan).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(59,130,246,.15);"><i class="fas fa-chart-pie" style="color:var(--BL);font-size:.7rem;"></i></div><div class="klbl">Sensus KG</div><div class="kv b">${Math.round(totSensus).toLocaleString('id-ID')}</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-percentage" style="color:var(--G);font-size:.7rem;"></i></div><div class="klbl">Achievement</div><div class="kv ${ach>=95?'':'y'}">${ach.toFixed(1)}%</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(245,158,11,.15);"><i class="fas fa-balance-scale" style="color:var(--Y);font-size:.7rem;"></i></div><div class="klbl">Rata BJR</div><div class="kv">${avgBJR.toFixed(2)} Kg</div></div>
-      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-users" style="color:var(--R);font-size:.7rem;"></i></div><div class="klbl">Total HK</div><div class="kv r">${Math.round(totHK).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-seedling" style="color:var(--G);font-size:0.812rem;"></i></div><div class="klbl">Total JJG</div><div class="kv">${Math.round(totJJG).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-weight-hanging" style="color:var(--G);font-size:0.812rem;"></i></div><div class="klbl">Total KG</div><div class="kv w">${Math.round(totKG).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-box-open" style="color:var(--R);font-size:0.812rem;"></i></div><div class="klbl">Restan KG</div><div class="kv r">${Math.round(totRestan).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(59,130,246,.15);"><i class="fas fa-chart-pie" style="color:var(--BL);font-size:0.812rem;"></i></div><div class="klbl">Sensus KG</div><div class="kv b">${Math.round(totSensus).toLocaleString('id-ID')}</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(34,197,94,.15);"><i class="fas fa-percentage" style="color:var(--G);font-size:0.812rem;"></i></div><div class="klbl">Achievement</div><div class="kv ${ach>=95?'':'y'}">${ach.toFixed(1)}%</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(245,158,11,.15);"><i class="fas fa-balance-scale" style="color:var(--Y);font-size:0.812rem;"></i></div><div class="klbl">Rata BJR</div><div class="kv">${avgBJR.toFixed(2)} Kg</div></div>
+      <div class="kc"><div class="ksmi" style="background:rgba(239,68,68,.15);"><i class="fas fa-users" style="color:var(--R);font-size:0.812rem;"></i></div><div class="klbl">Total HK</div><div class="kv r">${Math.round(totHK).toLocaleString('id-ID')}</div></div>
     </div>
     ${hasTanggalData ? `<div class="cc"><div class="cc-t"><i class="fas fa-chart-area"></i> Trend Produksi & Restan KG Harian</div><div id="ch-pkh"></div></div>` :
       `<div class="cc"><div class="cc-t"><i class="fas fa-chart-area"></i> Trend Produksi Harian</div><div class="empty-state"><i class="fas fa-calendar-xmark"></i>Belum ada data dengan kolom TANGGAL terisi.</div></div>`}
     <div class="gr2">
       <div class="cc"><div class="cc-t"><i class="fas fa-building"></i> Aktual vs Budget per Kebun</div><div id="ch-pke"></div></div>
-      <div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table"></i> Detail per Kebun</span><span style="font-size:.6rem;opacity:.5;">${kebunArr.length} kebun</span></div>
+      <div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table"></i> Detail per Kebun</span><span style="font-size:0.696rem;opacity:.5;">${kebunArr.length} kebun</span></div>
         <div class="tw" style="max-height:240px;"><table class="tbl"><thead><tr><th>Kebun</th><th>Jml AFD</th><th>Aktual (Kg)</th><th>Budget (Kg)</th><th>Ach%</th><th>Rata BJR</th></tr></thead><tbody>
         ${kebunArr.map(r=>{const p=r.b>0?(r.ac/r.b*100):0; const cl=p>=95?'g':p>=85?'wd':'bd';
           return `<tr><td><b>${escHtml(r.kebun)}</b></td><td>${r.afdCount}</td><td>${Math.round(r.ac).toLocaleString('id-ID')}</td><td>${Math.round(r.b).toLocaleString('id-ID')}</td><td class="${cl}">${p.toFixed(1)}%</td><td>${r.bjr.toFixed(2)}</td></tr>`;
@@ -2052,8 +2483,8 @@ function renderPksItemForm(){
     return `<tr>
       <td>${showKeg?'<b>'+escHtml(it.kegiatan)+'</b>':''}</td>
       <td>${escHtml(it.data)||'<span style="opacity:.4;">-</span>'}</td>
-      <td><input class="fin" id="phi-sat-${i}" value="${escHtml(it.sat)}" style="font-size:.68rem;padding:5px 7px;"></td>
-      <td><input class="fin" id="phi-act-${i}" type="number" step="any" placeholder="-" style="font-size:.68rem;padding:5px 7px;"></td>
+      <td><input class="fin" id="phi-sat-${i}" value="${escHtml(it.sat)}" style="font-size:0.789rem;padding:5px 7px;"></td>
+      <td><input class="fin" id="phi-act-${i}" type="number" step="any" placeholder="-" style="font-size:0.789rem;padding:5px 7px;"></td>
     </tr>`;
   }).join('');
 }
@@ -2146,7 +2577,7 @@ function renderPksAlertHtml(calc, kegArr){
   const execHtml = `
     <div class="${boxCls}">
       <div class="bx-hdr">
-        <div class="bx-ttl ${ttlCls}"><i class="fas fa-circle" style="font-size:.5rem;"></i> Executive Alert — PKS</div>
+        <div class="bx-ttl ${ttlCls}"><i class="fas fa-circle" style="font-size:0.58rem;"></i> Executive Alert — PKS</div>
         <span class="bdg" style="${badgeStyle}"><i class="fas ${badgeIcon}"></i> ${badgeTxt}</span>
       </div>
       <div class="bx-main">${headline}</div>
@@ -2183,7 +2614,7 @@ function renderPksAlertHtml(calc, kegArr){
         <div><div class="sl">Status</div><div class="sv" style="color:${progClr};">${progStat}</div></div>
       </div>
       <div class="pb-row"><div class="pb-top"><span>Proporsi Kegiatan On-Track</span><span>${progPct.toFixed(1)}%</span></div><div class="pb-trk"><div class="pb-fill" style="width:${Math.min(progPct,100)}%;background:${progClr};"></div></div></div>
-      <p style="font-size:.67rem;color:var(--TL);opacity:.6;margin-top:8px;font-style:italic;">${noteMap[progStat]}</p>
+      <p style="font-size:0.777rem;color:var(--TL);opacity:.6;margin-top:8px;font-style:italic;">${noteMap[progStat]}</p>
     </div>` : '';
 
   return execHtml + progressHtml;
@@ -2232,7 +2663,7 @@ async function loadPKS(){
         <div class="cc">
           <div class="cc-t">
             <span class="collapse-toggle" id="pks-toggle" onclick="togglePksTable()"><i class="fas fa-chevron-right"></i> <i class="fas fa-table-list"></i> Tabel Detail Data PKS (Bulanan) — klik untuk tampilkan</span>
-            <span style="font-size:.6rem;opacity:.5;">${pksRows.length} baris</span>
+            <span style="font-size:0.696rem;opacity:.5;">${pksRows.length} baris</span>
           </div>
           <div id="pks-table-wrap" style="display:none;">
             <div class="tw" style="max-height:420px;"><table class="tbl"><thead><tr><th>Tahun</th><th>Bulan</th><th>Kegiatan</th><th>Data</th><th>Satuan</th><th>Actual</th><th>Budget</th><th>%PCP</th></tr></thead><tbody>
@@ -2265,7 +2696,7 @@ async function loadPKS(){
         <div class="cc">
           <div class="cc-t">
             <span class="collapse-toggle" id="pks-harian-toggle" onclick="togglePksHarianTable()"><i class="fas fa-chevron-right"></i> <i class="fas fa-table-list"></i> Tabel Detail Data Harian PKS — klik untuk tampilkan</span>
-            <span style="font-size:.6rem;opacity:.5;">${pksHarianRows.length} baris</span>
+            <span style="font-size:0.696rem;opacity:.5;">${pksHarianRows.length} baris</span>
           </div>
           <div id="pks-harian-table-wrap" style="display:none;">
             <div class="tw" style="max-height:420px;"><table class="tbl"><thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Data</th><th>Satuan</th><th>Actual</th></tr></thead><tbody>
@@ -2447,50 +2878,174 @@ function togglePksHarianTable(){
 ════════════════════════════════════════════════════════════════════════ */
 async function loadBlok(){
   const tb = document.getElementById('blok-tb');
-  tb.innerHTML = `<tr><td colspan="10"><div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat...</div></td></tr>`;
-  if(!API_URL){ tb.innerHTML=`<tr><td colspan="10"><div class="empty-state"><i class="fas fa-plug-circle-xmark"></i>Backend belum terhubung.</div></td></tr>`; return; }
+  tb.innerHTML = `<tr><td colspan="11"><div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat...</div></td></tr>`;
+  if(!API_URL){ tb.innerHTML=`<tr><td colspan="11"><div class="empty-state"><i class="fas fa-plug-circle-xmark"></i>Backend belum terhubung.</div></td></tr>`; return; }
   try{
     const r = await api('getBlok');
     blokRows = r.data;
+    blokPage = 1;
     renderBlokTable(blokRows);
+    if(typeof rmFillBlokList === 'function') rmFillBlokList();
   }catch(e){
-    tb.innerHTML = `<tr><td colspan="10"><div class="empty-state"><i class="fas fa-triangle-exclamation"></i>${escHtml(e.message)}</div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="11"><div class="empty-state"><i class="fas fa-triangle-exclamation"></i>${escHtml(e.message)}</div></td></tr>`;
   }
 }
+function sphAlert(sph){
+  const v = parseIdNum(sph);
+  if(!sph && sph!==0) return {cls:'', label:''};
+  if(!isFinite(v) || v<=0) return {cls:'', label:''};
+  if(v < 100) return {cls:'bd', label:'⚠ SPH < 100 — perlu disisip (cek sensus pokok di lapangan)'};
+  if(v > 140) return {cls:'wd', label:'⚠ SPH > 140 — perlu thinning out (cek sensus pokok di lapangan)'};
+  return {cls:'g', label:'Normal'};
+}
+
+// Halaman 17 baris per halaman untuk tabel Master Blok — dulu tabel ini
+// menampilkan semua baris sekaligus dalam kotak scroll setinggi 420px, yang
+// bikin daftar blok yang panjang (ratusan baris) susah dinavigasi.
+const BLOK_PAGE_SIZE = 17;
+let blokPage = 1;
+let blokFilteredRows = [];
+
 function renderBlokTable(data){
+  blokFilteredRows = data;
+  const totalPages = Math.max(1, Math.ceil(data.length / BLOK_PAGE_SIZE));
+  if(blokPage > totalPages) blokPage = totalPages;
+  if(blokPage < 1) blokPage = 1;
+
   const tb = document.getElementById('blok-tb');
   const viewer = isViewer();
-  if(!data.length){ tb.innerHTML=`<tr><td colspan="10"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data blok.${viewer?'':' Klik "Tambah Blok" untuk mulai mengisi.'}</div></td></tr>`; return; }
-  tb.innerHTML = data.map((r,i)=>{
-    const sc = r.STATUS==='Produksi'?'g':r.STATUS==='TBM'?'wd':'bd';
-    return `<tr><td>${i+1}</td><td><b>${escHtml(r.KODE)}</b></td><td>${escHtml(r.ESTATE)}</td><td>${escHtml(r.AFD)}</td><td>${r.LUAS_HA}</td><td>${r.TAHUN_TANAM}</td><td>${escHtml(r.JENIS)}</td><td>${Number(r.POPULASI).toLocaleString('id-ID')}</td><td class="${sc}">● ${escHtml(r.STATUS)}</td>
-    <td class="role-write-col" style="${viewer?'display:none;':''}"><button class="btn btn-o btn-sm" onclick='editBlok(${r._row})'>Edit</button> <button class="btn btn-r btn-sm" onclick="deleteBlokRow(${r._row},'${escHtml(r.KODE)}')">Hapus</button></td></tr>`;
+  if(!data.length){
+    tb.innerHTML=`<tr><td colspan="11"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data blok.${viewer?'':' Klik "Tambah Blok" atau import lewat halaman "Import Produksi".'}</div></td></tr>`;
+    document.getElementById('blok-pg-info').textContent = 'Halaman 0 dari 0';
+    document.getElementById('blok-pg-prev').disabled = true;
+    document.getElementById('blok-pg-next').disabled = true;
+    return;
+  }
+  const start = (blokPage-1) * BLOK_PAGE_SIZE;
+  const pageRows = data.slice(start, start + BLOK_PAGE_SIZE);
+  tb.innerHTML = pageRows.map((r,i)=>{
+    const codeBlok = r.CODE_BLOK || r.KODE || '';
+    const sph = blokSph(r);
+    const al = sphAlert(sph);
+    const leHa = blokHa(r);
+    const lePkk = blokPkk(r);
+    const jenisTanah = blokJenisTanah(r);
+    const topografi = blokTopografi(r);
+    return `<tr><td>${start+i+1}</td><td>${escHtml(r.AFD)}</td><td><b>${escHtml(codeBlok)}</b></td><td>${r.TT||r.TAHUN_TANAM||''}</td><td>${escHtml(jenisTanah)}</td><td>${escHtml(topografi)}</td><td>${leHa?leHa.toLocaleString('id-ID',{maximumFractionDigits:2}):''}</td><td>${lePkk?lePkk.toLocaleString('id-ID'):''}</td><td>${sph?sph.toLocaleString('id-ID',{maximumFractionDigits:2}):''}</td><td class="${al.cls}">${al.label?'● '+al.label:''}</td>
+    <td class="role-write-col" style="${viewer?'display:none;':''}"><button class="btn btn-o btn-sm" onclick='editBlok(${r._row})'>Edit</button> <button class="btn btn-r btn-sm" onclick="deleteBlokRow(${r._row},'${escHtml(codeBlok)}')">Hapus</button></td></tr>`;
   }).join('');
+  document.getElementById('blok-pg-info').textContent = `Halaman ${blokPage} dari ${totalPages} (${data.length} baris)`;
+  document.getElementById('blok-pg-prev').disabled = blokPage<=1;
+  document.getElementById('blok-pg-next').disabled = blokPage>=totalPages;
 }
+function blokPrevPage(){ if(blokPage>1){ blokPage--; renderBlokTable(blokFilteredRows); } }
+function blokNextPage(){ const totalPages=Math.max(1,Math.ceil(blokFilteredRows.length/BLOK_PAGE_SIZE)); if(blokPage<totalPages){ blokPage++; renderBlokTable(blokFilteredRows); } }
 function filterBlokTable(){
   const q = document.getElementById('blok-search').value.toLowerCase();
-  renderBlokTable(blokRows.filter(r=>String(r.KODE).toLowerCase().includes(q)||String(r.ESTATE).toLowerCase().includes(q)||String(r.AFD).toLowerCase().includes(q)));
+  blokPage = 1;
+  renderBlokTable(blokRows.filter(r=>String(r.CODE_BLOK||r.KODE||'').toLowerCase().includes(q)||String(r.AFD||'').toLowerCase().includes(q)));
 }
+/* ────────────────────────────────────────────────────────────────────
+   KATEGORI DIMENSI BLOK (dulu hardcode: Status cuma 3 pilihan tetap,
+   Jenis Tanah & Topografi Areal cuma kotak isian bebas tanpa pilihan
+   baku — jadi tiap orang bisa ketik variasi berbeda buat hal yang sama,
+   mis. "Mineral" vs "mineral" vs "Tanah Mineral"). Sekarang KETIGANYA
+   dikonfigurasi lewat Settings > "Kategori Dimensi Blok" supaya admin
+   bisa menambah/mengurangi kategori sendiri tanpa perlu ubah kode.
+   Disimpan lokal per-perangkat lewat kvSet/kvGet (IndexedDB/localStorage).
+   Satu fungsi generik dipakai untuk ketiga dimensi (STATUS, JENIS_TANAH,
+   TOPOGRAFI_AREAL) supaya kalau nanti perlu tambah dimensi lain lagi,
+   cukup tambah 1 entri di BLOK_DIMENSIONS.
+──────────────────────────────────────────────────────────────────── */
+const BLOK_DIMENSIONS = [
+  { key:'STATUS',           label:'Status Blok',       selectId:'bl-STATUS',           storageKey:'wrp_blok_status_options',   chipsId:'blok-dim-STATUS-chips',           newId:'blok-dim-STATUS-new',           defaults:['Produksi','TBM','Replanting'] },
+  { key:'JENIS_TANAH',      label:'Jenis Tanah',       selectId:'bl-JENIS_TANAH',      storageKey:'wrp_blok_jenistanah_options', chipsId:'blok-dim-JENIS_TANAH-chips',      newId:'blok-dim-JENIS_TANAH-new',      defaults:['Mineral','Gambut','Pasir','Liat'] },
+  { key:'TOPOGRAFI_AREAL',  label:'Topografi Areal',   selectId:'bl-TOPOGRAFI_AREAL',  storageKey:'wrp_blok_topografi_options',  chipsId:'blok-dim-TOPOGRAFI_AREAL-chips',  newId:'blok-dim-TOPOGRAFI_AREAL-new',  defaults:['Datar','Berbukit','Bergelombang','Rawa'] },
+];
+function blokDim(key){ return BLOK_DIMENSIONS.find(d=>d.key===key); }
+async function getBlokDimOptions(key){
+  const dim = blokDim(key);
+  try{
+    const raw = await kvGet(dim.storageKey);
+    if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr) && arr.length) return arr; }
+  }catch(e){}
+  return dim.defaults.slice();
+}
+async function saveBlokDimOptions(key, arr){ await kvSet(blokDim(key).storageKey, JSON.stringify(arr)); }
+async function refreshBlokDimSelect(key, selected){
+  const dim = blokDim(key);
+  const opts = await getBlokDimOptions(key);
+  const sel = document.getElementById(dim.selectId);
+  if(!sel) return;
+  sel.innerHTML = opts.map(o=>`<option>${escHtml(o)}</option>`).join('');
+  if(selected && !opts.includes(selected)) sel.innerHTML += `<option>${escHtml(selected)}</option>`; // data lama pakai nilai di luar daftar -> tetap ditampilkan
+  sel.value = selected || opts[0];
+}
+async function refreshAllBlokDimSelects(selectedByKey){
+  for(const dim of BLOK_DIMENSIONS) await refreshBlokDimSelect(dim.key, (selectedByKey||{})[dim.key]);
+}
+async function renderBlokDimSettings(key){
+  const dim = blokDim(key);
+  const wrap = document.getElementById(dim.chipsId);
+  if(!wrap) return;
+  const opts = await getBlokDimOptions(key);
+  wrap.innerHTML = opts.map(o=>`<span class="bdg bdg-g" style="display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;margin:3px 4px 3px 0;">${escHtml(o)} <button type="button" onclick="removeBlokDimCategory('${key}','${escHtml(o).replace(/'/g,"\\'")}')" title="Hapus kategori" style="background:none;border:none;color:inherit;opacity:.7;cursor:pointer;font-size:0.9em;line-height:1;">✕</button></span>`).join('');
+}
+async function renderAllBlokDimSettings(){
+  for(const dim of BLOK_DIMENSIONS) await renderBlokDimSettings(dim.key);
+}
+async function addBlokDimCategory(key){
+  const dim = blokDim(key);
+  const inp = document.getElementById(dim.newId);
+  const val = (inp.value||'').trim();
+  if(!val){ showToast('Nama kategori belum diisi', true); return; }
+  const opts = await getBlokDimOptions(key);
+  if(opts.some(o=>o.toLowerCase()===val.toLowerCase())){ showToast('Kategori itu sudah ada', true); return; }
+  opts.push(val);
+  await saveBlokDimOptions(key, opts);
+  inp.value='';
+  await renderBlokDimSettings(key);
+  showToast(`Kategori "${val}" ditambahkan ke ${dim.label}.`);
+}
+async function removeBlokDimCategory(key, name){
+  const dim = blokDim(key);
+  const opts = await getBlokDimOptions(key);
+  if(opts.length<=1){ showToast(`Minimal harus ada 1 kategori ${dim.label}.`, true); return; }
+  if(!confirm(`Hapus kategori "${name}" dari ${dim.label}? Blok yang sudah memakai nilai ini tidak berubah, tapi kategori ini tidak akan muncul lagi di pilihan Tambah/Edit Blok.`)) return;
+  await saveBlokDimOptions(key, opts.filter(o=>o!==name));
+  await renderBlokDimSettings(key);
+  showToast(`Kategori "${name}" dihapus dari ${dim.label}.`);
+}
+// Alias lama dipertahankan (dipanggil dari HTML/kode lain yang mungkin masih
+// memakai nama fungsi versi sebelumnya) supaya tidak ada pemanggilan gagal.
+async function refreshBlokStatusSelect(selected){ await refreshBlokDimSelect('STATUS', selected); }
+async function renderBlokStatusSettings(){ await renderAllBlokDimSettings(); }
+
 function openBlokModal(){
   document.getElementById('blok-modal-title').textContent='Tambah Blok Baru';
   document.getElementById('bl-row').value='';
-  ['KODE','ESTATE','AFD','LUAS_HA','TAHUN_TANAM','JENIS','POPULASI'].forEach(c=>document.getElementById('bl-'+c).value='');
-  document.getElementById('bl-STATUS').value='Produksi';
+  ['KODE','ESTATE','AFD','LUAS_HA','TAHUN_TANAM','JENIS','POPULASI','CODE_BLOK','TT','LE-Ha','LE-Pkk','SPH'].forEach(c=>{ const el=document.getElementById('bl-'+c); if(el) el.value=''; });
+  refreshAllBlokDimSelects();
   openM('m-blok');
 }
 function editBlok(rowNum){
   const r = blokRows.find(x=>x._row===rowNum);
   if(!r) return;
-  document.getElementById('blok-modal-title').textContent='Edit Blok '+r.KODE;
+  document.getElementById('blok-modal-title').textContent='Edit Blok '+(r.CODE_BLOK||r.KODE||'');
   document.getElementById('bl-row').value = rowNum;
-  document.getElementById('bl-KODE').value = r.KODE;
-  document.getElementById('bl-ESTATE').value = r.ESTATE;
-  document.getElementById('bl-AFD').value = r.AFD;
-  document.getElementById('bl-LUAS_HA').value = r.LUAS_HA;
-  document.getElementById('bl-TAHUN_TANAM').value = r.TAHUN_TANAM;
-  document.getElementById('bl-JENIS').value = r.JENIS;
-  document.getElementById('bl-POPULASI').value = r.POPULASI;
-  document.getElementById('bl-STATUS').value = r.STATUS;
+  document.getElementById('bl-KODE').value = r.KODE||'';
+  document.getElementById('bl-ESTATE').value = r.ESTATE||'';
+  document.getElementById('bl-AFD').value = r.AFD||'';
+  document.getElementById('bl-LUAS_HA').value = r.LUAS_HA||'';
+  document.getElementById('bl-TAHUN_TANAM').value = r.TAHUN_TANAM||'';
+  document.getElementById('bl-JENIS').value = r.JENIS||'';
+  document.getElementById('bl-POPULASI').value = r.POPULASI||'';
+  document.getElementById('bl-CODE_BLOK').value = r.CODE_BLOK||'';
+  document.getElementById('bl-TT').value = r.TT||'';
+  document.getElementById('bl-LE-Ha').value = blokHa(r)||'';
+  document.getElementById('bl-LE-Pkk').value = blokPkk(r)||'';
+  document.getElementById('bl-SPH').value = blokSph(r)||'';
+  refreshAllBlokDimSelects({ STATUS: r.STATUS||'Produksi', JENIS_TANAH: blokJenisTanah(r), TOPOGRAFI_AREAL: blokTopografi(r) });
   openM('m-blok');
 }
 async function submitBlok(){
@@ -2503,9 +3058,16 @@ async function submitBlok(){
     JENIS: document.getElementById('bl-JENIS').value.trim(),
     POPULASI: document.getElementById('bl-POPULASI').value,
     STATUS: document.getElementById('bl-STATUS').value,
+    CODE_BLOK: document.getElementById('bl-CODE_BLOK').value.trim(),
+    TT: document.getElementById('bl-TT').value,
+    JENIS_TANAH: document.getElementById('bl-JENIS_TANAH').value.trim(),
+    TOPOGRAFI_AREAL: document.getElementById('bl-TOPOGRAFI_AREAL').value.trim(),
+    'LE-Ha': document.getElementById('bl-LE-Ha').value,
+    'LE-Pkk': document.getElementById('bl-LE-Pkk').value,
+    SPH: document.getElementById('bl-SPH').value,
     username: currentUser?currentUser.username:'system'
   };
-  if(!payload.KODE || !payload.ESTATE){ showToast('Kode dan Estate wajib diisi',true); return; }
+  if(!payload.CODE_BLOK && !payload.KODE){ showToast('Code Blok wajib diisi',true); return; }
   const rowNum = document.getElementById('bl-row').value;
   try{
     if(rowNum){ payload._row = rowNum; await api('updateBlok', payload, 'POST'); showToast('Blok berhasil diperbarui!'); }
@@ -2514,7 +3076,7 @@ async function submitBlok(){
   }catch(e){ showToast('Gagal menyimpan: '+e.message, true); }
 }
 async function deleteBlokRow(rowNum, kode){
-  if(!confirm('Hapus blok "'+kode+'"? Tindakan ini akan menghapus baris di Google Sheets dan tidak dapat dibatalkan.')) return;
+  if(!confirm('Hapus blok "'+kode+'"? Tindakan ini akan menghapus baris di database dan tidak dapat dibatalkan.')) return;
   try{
     await api('deleteBlok', {_row: rowNum, username: currentUser?currentUser.username:'system'}, 'POST');
     showToast('Blok dihapus.'); loadBlok();
@@ -2567,6 +3129,213 @@ async function submitBudget(){
 }
 
 /* ════════════════════════════════════════════════════════════════════════
+   REKOMENDASI MATERIAL (kalkulator dosis per blok) — revisi 2026
+════════════════════════════════════════════════════════════════════════ */
+let budgetMaterialRows = [];
+let budgetMaterialExpanded = false;
+
+async function loadBudgetMaterial(){
+  try{
+    const r = await api('getBudgetMaterial');
+    budgetMaterialRows = r.data || [];
+  }catch(e){
+    budgetMaterialRows = [];
+  }
+  // Ingat pilihan Material/Pekerjaan yang sudah diketik user SEBELUM data ini
+  // datang (mis. load async ini baru selesai belakangan) supaya tidak
+  // ke-reset jadi blank begitu dropdown diisi ulang di bawah.
+  const matSel = document.getElementById('rm-material');
+  const prevMaterial = matSel.value;
+  const materials = [...new Set(budgetMaterialRows.map(r=>r.MATERIAL).filter(Boolean))].sort();
+  matSel.innerHTML = '<option value="">— pilih material —</option>' + materials.map(m=>`<option value="${escHtml(m)}">${escHtml(m)}</option>`).join('');
+  if(prevMaterial && materials.includes(prevMaterial)) matSel.value = prevMaterial;
+  budgetMaterialExpanded = false;
+  renderBudgetMaterialTable();
+  // Kalau database rekomendasi material masih kosong sama sekali (belum
+  // pernah diimpor), tabel "Rekomendasi Material di Blok Ini" akan SELALU
+  // kosong apapun Code Blok yang diketik — bukan bug, tapi memang belum ada
+  // data untuk dicocokkan. Kasih catatan yang jelas di sini (bukan cuma
+  // "tidak ditemukan") supaya tidak dikira kalkulatornya rusak.
+  const note = document.getElementById('rm-reko-note');
+  if(!budgetMaterialRows.length && note){
+    note.innerHTML = 'Database rekomendasi material masih kosong. Isi lewat halaman <b>"Import Produksi"</b> &rarr; pilih sheet <b>BudgetMaterial</b>, baru kalkulator ini bisa mencocokkan rekomendasi per blok.';
+  }
+  // loadBlok() dan loadBudgetMaterial() sama-sama async dan dipanggil
+  // bersamaan saat halaman dibuka — urutan selesainya tidak pasti. Kalau
+  // user (atau datalist) sudah mengisi Code Blok duluan sebelum data
+  // material ini datang, sinkronkan ulang di sini supaya kalkulator +
+  // tabel rekomendasi ikut terisi, bukan diam menampilkan hasil lama/kosong.
+  if(document.getElementById('rm-blok').value.trim()) rmLookupBlok();
+  else{ rmFillPekerjaan(); rmCalc(); }
+}
+
+function rmFillBlokList(){
+  const dl = document.getElementById('rm-blok-list');
+  if(!dl) return;
+  const codes = [...new Set(blokRows.map(r=>r.CODE_BLOK||r.KODE).filter(Boolean))];
+  dl.innerHTML = codes.map(c=>`<option value="${escHtml(c)}">`).join('');
+  // Sama seperti di loadBudgetMaterial(): kalau blokRows baru datang belakangan
+  // (mis. koneksi online yang agak lambat) dan Code Blok sudah terlanjur
+  // diketik, cocokkan ulang supaya Info Blok tidak nyangkut di "0 Ha/0 Pokok".
+  if(document.getElementById('rm-blok').value.trim()) rmLookupBlok();
+}
+
+function _rmFindBlok(){
+  const code = document.getElementById('rm-blok').value.trim();
+  if(!code) return null;
+  return blokRows.find(r=>String(r.CODE_BLOK||r.KODE||'').toLowerCase()===code.toLowerCase()) || null;
+}
+
+function rmLookupBlok(){
+  const blok = _rmFindBlok();
+  const info = document.getElementById('rm-blok-info');
+  if(!blok){
+    const typed = document.getElementById('rm-blok').value.trim();
+    info.innerHTML = typed
+      ? `<span class="rm-chip rm-chip-warn"><i class="fas fa-triangle-exclamation"></i> Blok "${escHtml(typed)}" tidak ditemukan</span>`
+      : `<span class="rm-chip rm-chip-empty"><i class="fas fa-hourglass-half"></i> Belum ada blok dipilih</span>`;
+    document.getElementById('rm-reko-tb').innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-arrow-up"></i>Blok tidak ditemukan.</div></td></tr>';
+    document.getElementById('rm-reko-note').textContent = 'Ketik Code Blok di atas untuk melihat rekomendasi.';
+    rmCalc();
+    return;
+  }
+  const ha = blokHa(blok), pkk = blokPkk(blok), tt = blok.TT||blok.TAHUN_TANAM||'-';
+  const haChip = ha>0
+    ? `<span class="rm-chip rm-chip-ha"><i class="fas fa-ruler-combined"></i> ${ha.toLocaleString('id-ID',{maximumFractionDigits:2})} Ha</span>`
+    : `<span class="rm-chip rm-chip-warn"><i class="fas fa-triangle-exclamation"></i> Luas Ha kosong di Master Blok</span>`;
+  const pkkChip = pkk>0
+    ? `<span class="rm-chip rm-chip-pkk"><i class="fas fa-seedling"></i> ${pkk.toLocaleString('id-ID')} Pokok</span>`
+    : `<span class="rm-chip rm-chip-warn"><i class="fas fa-triangle-exclamation"></i> Jumlah Pokok kosong</span>`;
+  info.innerHTML = `<span class="rm-chip"><i class="fas fa-map"></i> AFD ${escHtml(blok.AFD||'-')}</span>${haChip}${pkkChip}<span class="rm-chip rm-chip-tt"><i class="fas fa-calendar"></i> TT ${escHtml(String(tt))}</span>`;
+  rmRenderRekomendasi(blok);
+  rmCalc();
+}
+
+// Tabel "Rekomendasi Material di Blok Ini" dilipat: tampilkan 7 baris dulu,
+// dengan tombol untuk membuka semuanya kalau daftarnya panjang.
+const RM_REKO_PAGE_SIZE = 7;
+let rmRekoExpanded = false;
+let rmRekoAllMatches = [];
+
+function rmRenderRekomendasi(blok){
+  const tt = String(blok.TT||blok.TAHUN_TANAM||'').trim();
+  const tb = document.getElementById('rm-reko-tb');
+  const note = document.getElementById('rm-reko-note');
+  const moreWrap = document.getElementById('rm-reko-more-wrap');
+  rmRekoExpanded = false;
+  if(!tt){ tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-triangle-exclamation"></i>Blok ini belum punya data TT (Tahun Tanam), rekomendasi tidak bisa dicocokkan otomatis.</div></td></tr>'; moreWrap.style.display='none'; return; }
+  if(!budgetMaterialRows.length){
+    tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-database"></i>Database rekomendasi material masih kosong. Import lewat halaman "Import Produksi" &rarr; sheet BudgetMaterial.</div></td></tr>';
+    note.innerHTML = 'Database rekomendasi material masih kosong. Isi lewat halaman <b>"Import Produksi"</b> &rarr; pilih sheet <b>BudgetMaterial</b>, baru kalkulator ini bisa mencocokkan rekomendasi per blok.';
+    moreWrap.style.display='none';
+    return;
+  }
+  const matches = budgetMaterialRows.filter(r=>String(r.TAHUN_TANAM||'').trim()===tt);
+  rmRekoAllMatches = matches;
+  note.textContent = matches.length
+    ? `${matches.length} rekomendasi ditemukan untuk tahun tanam ${tt} (STATUS: ${[...new Set(matches.map(m=>m.STATUS).filter(Boolean))].join(', ')||'-'}).`
+    : `Tidak ada rekomendasi material yang cocok untuk tahun tanam ${tt} di database.`;
+  if(!matches.length){ tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-folder-open"></i>Tidak ada rekomendasi untuk tahun tanam ini.</div></td></tr>'; moreWrap.style.display='none'; return; }
+  renderRekoTable(blok);
+}
+
+function renderRekoTable(blok){
+  const tb = document.getElementById('rm-reko-tb');
+  const matches = rmRekoAllMatches;
+  const shown = rmRekoExpanded ? matches : matches.slice(0, RM_REKO_PAGE_SIZE);
+  tb.innerHTML = shown.map(m=>{
+    const pengali = Number(m.REF_3)===1 ? 'POKOK' : 'HA';
+    const dosis = parseIdNum(m.DOSIS);
+    const basis = pengali==='POKOK' ? blokPkk(blok) : blokHa(blok);
+    const total = dosis * basis;
+    return `<tr><td>${escHtml(m.PEKERJAAN||'')}</td><td>${escHtml(m.MATERIAL||'')}</td><td>${dosis||0}</td><td>${escHtml(m.SATUAN||'')}</td><td>${pengali==='POKOK'?'Per Pokok':'Per Ha'}</td><td><b>${total?total.toLocaleString('id-ID',{maximumFractionDigits:2}):'0'} ${escHtml(m.SATUAN||'')}</b></td></tr>`;
+  }).join('');
+  const moreWrap = document.getElementById('rm-reko-more-wrap');
+  if(matches.length<=RM_REKO_PAGE_SIZE){ moreWrap.style.display='none'; }
+  else{
+    moreWrap.style.display='';
+    document.getElementById('rm-reko-more-btn').textContent = rmRekoExpanded ? `Lipat (tampilkan 7 dari ${matches.length})` : `Tampilkan Semua (${matches.length} baris)`;
+  }
+}
+function toggleRekoExpand(){
+  const blok = _rmFindBlok();
+  if(!blok) return;
+  rmRekoExpanded = !rmRekoExpanded;
+  renderRekoTable(blok);
+}
+
+function rmFillPekerjaan(){
+  const material = document.getElementById('rm-material').value;
+  const sel = document.getElementById('rm-pekerjaan');
+  const prevPekerjaan = sel.value;
+  if(!material){ sel.innerHTML = '<option value="">— pilih pekerjaan —</option>'; return; }
+  const jobs = [...new Set(budgetMaterialRows.filter(r=>r.MATERIAL===material).map(r=>r.PEKERJAAN).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">— pilih pekerjaan —</option>' + jobs.map(j=>`<option value="${escHtml(j)}">${escHtml(j)}</option>`).join('');
+  // Kalau material dipilih ulang (mis. dari loadBudgetMaterial() yang
+  // mengembalikan pilihan sebelumnya) dan pekerjaan yang tadi dipilih masih
+  // ada di daftar Pekerjaan untuk material ini, pertahankan — jangan blank.
+  if(prevPekerjaan && jobs.includes(prevPekerjaan)) sel.value = prevPekerjaan;
+}
+
+// Pengali sekarang READ-ONLY (badge), bukan <select> — nilainya SELALU
+// ditentukan otomatis oleh data material/pekerjaan yang dipilih (kolom
+// REF_3 di sheet BudgetMaterial), jadi dropdown manual sebelumnya percuma:
+// apa pun yang dipilih user, rmCalc() akan langsung menimpanya balik.
+function rmSetPengaliBadge(pengali){
+  const badge = document.getElementById('rm-pengali-badge');
+  if(!pengali){ badge.className='rm-pengali-badge'; badge.innerHTML = '<i class="fas fa-minus"></i> —'; return; }
+  badge.className = 'rm-pengali-badge on';
+  badge.innerHTML = pengali==='POKOK' ? '<i class="fas fa-seedling"></i> Per Pokok' : '<i class="fas fa-ruler-combined"></i> Per Ha';
+}
+
+function rmCalc(){
+  const blok = _rmFindBlok();
+  const material = document.getElementById('rm-material').value;
+  const pekerjaan = document.getElementById('rm-pekerjaan').value;
+  const dosisEl = document.getElementById('rm-dosis');
+  const totalEl = document.getElementById('rm-total');
+  totalEl.classList.remove('warn');
+  if(!material || !pekerjaan){ dosisEl.value=''; totalEl.textContent='-'; rmSetPengaliBadge(null); return; }
+  const blokTT = blok ? String(blok.TT||blok.TAHUN_TANAM||'').trim() : '';
+  let row = budgetMaterialRows.find(r=>r.MATERIAL===material && r.PEKERJAAN===pekerjaan && String(r.TAHUN_TANAM||'').trim()===blokTT);
+  if(!row) row = budgetMaterialRows.find(r=>r.MATERIAL===material && r.PEKERJAAN===pekerjaan);
+  if(!row){ dosisEl.value=''; totalEl.classList.add('warn'); totalEl.textContent='Kombinasi tidak ditemukan'; rmSetPengaliBadge(null); return; }
+  const dosis = parseIdNum(row.DOSIS);
+  const pengali = Number(row.REF_3)===1 ? 'POKOK' : 'HA';
+  dosisEl.value = dosis + ' ' + (row.SATUAN||'') + ' / ' + (pengali==='POKOK'?'Pokok':'Ha');
+  rmSetPengaliBadge(pengali);
+  if(!blok){ totalEl.classList.add('warn'); totalEl.textContent = 'Ketik Code Blok yang valid untuk menghitung total'; return; }
+  const basis = pengali==='POKOK' ? blokPkk(blok) : blokHa(blok);
+  const total = dosis * basis;
+  if(basis<=0){
+    totalEl.classList.add('warn');
+    totalEl.textContent = `Blok belum punya data ${pengali==='POKOK'?'Jumlah Pokok':'Luas Ha'} — total tidak bisa dihitung`;
+    return;
+  }
+  totalEl.textContent = `${total.toLocaleString('id-ID',{maximumFractionDigits:2})} ${row.SATUAN||''} (${dosis} × ${basis.toLocaleString('id-ID')} ${pengali==='POKOK'?'pokok':'ha'})`;
+}
+
+function renderBudgetMaterialTable(){
+  const tb = document.getElementById('bm-tb');
+  const q = (document.getElementById('bm-search').value||'').toLowerCase();
+  let rows = budgetMaterialRows;
+  if(q) rows = rows.filter(r=>String(r.PEKERJAAN||'').toLowerCase().includes(q)||String(r.MATERIAL||'').toLowerCase().includes(q));
+  if(!rows.length){ tb.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data rekomendasi material. Import lewat halaman "Import Produksi" &rarr; sheet BudgetMaterial.</div></td></tr>'; document.getElementById('bm-more-wrap').style.display='none'; return; }
+  const shown = budgetMaterialExpanded ? rows : rows.slice(0, 10);
+  tb.innerHTML = shown.map(r=>`<tr><td>${escHtml(r.PEKERJAAN||'')}</td><td>${escHtml(r.MATERIAL||'')}</td><td>${escHtml(r.SATUAN||'')}</td><td>${r.DOSIS||0}</td><td>${escHtml(String(r.TAHUN_TANAM||''))}</td><td>${escHtml(r.STATUS||'')}</td><td style="max-width:260px;white-space:normal;">${escHtml(r.DESKRIPSI||'')}</td></tr>`).join('');
+  const moreWrap = document.getElementById('bm-more-wrap');
+  if(rows.length<=10){ moreWrap.style.display='none'; }
+  else{
+    moreWrap.style.display='';
+    document.getElementById('bm-more-btn').textContent = budgetMaterialExpanded ? `Lipat (tampilkan 10 dari ${rows.length})` : `Tampilkan Semua (${rows.length} baris)`;
+  }
+}
+function toggleBudgetMaterialExpand(){
+  budgetMaterialExpanded = !budgetMaterialExpanded;
+  renderBudgetMaterialTable();
+}
+
+/* ════════════════════════════════════════════════════════════════════════
    MASTER USER
 ════════════════════════════════════════════════════════════════════════ */
 async function loadUsers(){
@@ -2586,7 +3355,7 @@ function renderUserTable(data){
   if(!data.length){ tb.innerHTML=`<tr><td colspan="9"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada user lain.</div></td></tr>`; return; }
   const rc={'Super Admin':`background:rgba(${AuRGB},.2);color:${Au}`,'Admin':`background:rgba(34,197,94,.15);color:${G}`,'Viewer':`background:rgba(59,130,246,.15);color:${BL}`};
   tb.innerHTML = data.map((r,i)=>{const sc=r.STATUS==='Aktif'?'g':'wd';
-    return `<tr><td>${i+1}</td><td><b>${escHtml(r.NAMA)}</b></td><td>${escHtml(r.USERNAME)}</td><td>${escHtml(r.EMAIL)}</td><td><span style="${rc[r.ROLE]||''};padding:2px 8px;border-radius:4px;font-size:.6rem;font-weight:600;">${escHtml(r.ROLE)}</span></td><td>${escHtml(r.ESTATE_AKSES)}</td><td class="${sc}">● ${escHtml(r.STATUS)}</td><td>${r.LAST_LOGIN?new Date(r.LAST_LOGIN).toLocaleString('id-ID'):'-'}</td>
+    return `<tr><td>${i+1}</td><td><b>${escHtml(r.NAMA)}</b></td><td>${escHtml(r.USERNAME)}</td><td>${escHtml(r.EMAIL)}</td><td><span style="${rc[r.ROLE]||''};padding:2px 8px;border-radius:4px;font-size:0.696rem;font-weight:600;">${escHtml(r.ROLE)}</span></td><td>${escHtml(r.ESTATE_AKSES)}</td><td class="${sc}">● ${escHtml(r.STATUS)}</td><td>${r.LAST_LOGIN?new Date(r.LAST_LOGIN).toLocaleString('id-ID'):'-'}</td>
     <td class="role-write-col"><button class="btn btn-r btn-sm" onclick="deleteUserRow(${r._row},'${escHtml(r.USERNAME)}')">Hapus</button></td></tr>`;
   }).join('');
 }
@@ -2623,13 +3392,69 @@ async function deleteUserRow(rowNum, username){
 /* ════════════════════════════════════════════════════════════════════════
    IMPORT
 ════════════════════════════════════════════════════════════════════════ */
-const PRODUKSI_COLS = ['PT','KEBUN','AFD','LUAS','PKK','SPH','BUDGET_TON','SENSUS_TON',
-  'BUDGET_KG','SENSUS_KG','JJG','KG','HK','HA_PANEN','TON','BJR','ROTASI','TON_HA',
-  'JJG_PKK','OUTPUT_JJG','OUTPUT_KG','BULAN','TAHUN','TANGGAL'];
+let importableSheets = [];   // [{sheet, columns:[...]}]
+let currentImportCols = [];
+
+// Cadangan lokal (SELALU tersedia) untuk daftar sheet yang bisa diimpor —
+// dipakai kalau backend yang sedang terhubung (mis. deployment Apps Script
+// "online" yang lebih lama, sebelum action getSheetSchemas ditambahkan)
+// belum mengenal action ini. Tanpa cadangan ini, dropdown "Sheet Tujuan"
+// akan selalu gagal dimuat walau koneksi backend sendiri baik-baik saja.
+// Daftar & kolom di bawah ini SAMA PERSIS dengan Data/SheetSchema.cs di sisi
+// backend — kalau kolom di sana berubah, sesuaikan juga di sini.
+const IMPORT_SHEETS_FALLBACK = [
+  { sheet:'Produksi', columns:['PT','KEBUN','AFD','LUAS','PKK','SPH','BUDGET_TON','SENSUS_TON','BUDGET_KG','SENSUS_KG','JJG','KG','HK','HA_PANEN','TON','BJR','ROTASI','TON_HA','JJG_PKK','OUTPUT_JJG','OUTPUT_KG','BULAN','TAHUN','TANGGAL'] },
+  { sheet:'Blok', columns:['KODE','ESTATE','AFD','LUAS_HA','TAHUN_TANAM','JENIS','POPULASI','STATUS','KBN','CODE_BLOK','STT','PROGENY','BULAN_TANAM','TT','JENIS_TANAH','TOPOGRAFI_AREAL','LE-Ha','LE-Pkk','SPH'] },
+  { sheet:'Budget', columns:['TAHUN','BULAN','ESTATE','BUDGET_KG','HK_RENCANA'] },
+  { sheet:'BudgetMaterial', columns:['PEKERJAAN','MATERIAL','SATUAN','DOSIS','DESKRIPSI','TAHUN_TANAM','STATUS','REF_3'] },
+  { sheet:'Perblok', columns:['KBN','AFD','STT','BLOK','PROGENY','BLN_TNM','TT','JENIS_TANAH','LUAS_PANEN_(HA)','PKK_PROD','SPH','BUDGET_TON','SENSUS_TON','BUDGET_KG','SENSUS_KG','JJG','KG','HK','HA_PANEN','TON','BJR','ROTASI','TON/HA','JJG/PKK','OUTPUT_JJG','OUTPUT_KG','TAHUN'] },
+  { sheet:'Harian', columns:['TANGGAL','KEBUN','AFDELING','JANJANG','TONASE','HK','RESTAN'] },
+  { sheet:'PKS', columns:['TAHUN','BULAN','KEGIATAN','SER','DATA','SAT','ACTUAL','BUDGET','PCT_PCP','SBI_ACTUAL','SBI_BUDGET','SBI_PCT_PCP'] },
+  { sheet:'PksHarian', columns:['TANGGAL','TAHUN','BULAN','KEGIATAN','SER','DATA','SAT','ACTUAL','BUDGET'] },
+  { sheet:'Perawatan', columns:['KBN','AFD','BLOK','TANAM','TAHUN_TANAM','JENIS_TANAH','LUAS','PKK','SPH','ROT_TERAKHIR_GAWANGAN_CHEMIST','ROTTERAKHIR_GAWANGAN_MANUAL','ROT_TERAKHIR_PIRINGAN_CHEMIST','ROT_TERAKHIR_PIRINGAN_MANUAL'] },
+  { sheet:'HistPupuk', columns:['KEBUN','AFD','BLOK','REKOM_(KG)','REALISASI_(KG)','VARIANT_(%)','TAHUN'] },
+  { sheet:'PemupukanBlok', columns:['KEBUN','AFD','BLOK','TT','JENIS_TANAH','PROGENI','LUAS_(HA)','POPULASI','SPH','JENIS_PUPUK','KG_PER_POKOK','REKOM_TOTAL_KG','KG/_ROTASI_1','KG/_ROTASI_2','KG/_ROTASI_3','KG/_ROTASI_4','REALISASI_KG_2026','REALISASI_HA_2026','REALISASI_KG_2025','REALISASI_HA_2025','REALISASI_KG_2024','REALISASI_HA_2024'] }
+];
+
+async function loadImportableSheets(){
+  const sel = document.getElementById('imp-sheet');
+  let usedFallback = false;
+  try{
+    const r = await api('getSheetSchemas');
+    importableSheets = (r && r.data && r.data.length) ? r.data : IMPORT_SHEETS_FALLBACK;
+    if(!r || !r.data || !r.data.length) usedFallback = true;
+  }catch(e){
+    importableSheets = IMPORT_SHEETS_FALLBACK;
+    usedFallback = true;
+  }
+  sel.innerHTML = '<option value="">— pilih sheet tujuan —</option>' + importableSheets.map(s=>`<option value="${escHtml(s.sheet)}">${escHtml(s.sheet)}</option>`).join('');
+  if(usedFallback) showToast('Backend belum mendukung daftar sheet otomatis — memakai daftar bawaan aplikasi.', false);
+}
+
+function onImportSheetChange(){
+  const sheet = document.getElementById('imp-sheet').value;
+  const info = document.getElementById('imp-cols-info');
+  resetImport();
+  const def = importableSheets.find(s=>s.sheet===sheet);
+  currentImportCols = def ? def.columns : [];
+  if(!def){ info.innerHTML = 'Pilih sheet tujuan terlebih dahulu untuk melihat kolom yang dibutuhkan.'; return; }
+  info.innerHTML = `Sheet <b>${escHtml(sheet)}</b> membutuhkan kolom: <b>${currentImportCols.map(escHtml).join(', ')}</b> pada baris pertama (header). Data yang diupload akan <b>ditambahkan</b> ke data yang sudah ada, bukan menimpa.`;
+}
+
+function downloadImportTemplate(){
+  const sheet = document.getElementById('imp-sheet').value;
+  if(!sheet){ showToast('Pilih sheet tujuan terlebih dahulu', true); return; }
+  const ws = XLSX.utils.aoa_to_sheet([currentImportCols]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheet.substring(0,31));
+  XLSX.writeFile(wb, `template_${sheet}.xlsx`);
+}
 
 function handleFile(inp){
   const f = inp.files[0];
   if(!f) return;
+  const sheet = document.getElementById('imp-sheet').value;
+  if(!sheet){ showToast('Pilih sheet tujuan terlebih dahulu', true); inp.value=''; return; }
   document.getElementById('fi-info').style.display='block';
   document.getElementById('fi-info').innerHTML = `<i class="fas fa-circle-notch spin" style="color:var(--Y);"></i> Memparsing ${escHtml(f.name)}...`;
 
@@ -2643,18 +3468,22 @@ function handleFile(inp){
       if(!json.length){ throw new Error('File tidak berisi data (sheet kosong)'); }
 
       const norm = s => String(s).trim().toUpperCase().replace(/\s+/g,'_');
+      const colLookup = {}; currentImportCols.forEach(c=>{ colLookup[norm(c)] = c; });
       importParsedRows = json.map(row=>{
         const o = {};
-        Object.keys(row).forEach(k=>{ o[norm(k)] = row[k]; });
+        Object.keys(row).forEach(k=>{
+          const n = norm(k);
+          o[colLookup[n] || n] = row[k];
+        });
         return o;
       });
 
       const foundCols = Object.keys(importParsedRows[0]);
-      const matched = PRODUKSI_COLS.filter(c=>foundCols.includes(c));
-      const missing = PRODUKSI_COLS.filter(c=>!foundCols.includes(c));
+      const matched = currentImportCols.filter(c=>foundCols.includes(c));
+      const missing = currentImportCols.filter(c=>!foundCols.includes(c));
 
-      document.getElementById('fi-info').innerHTML = `<i class="fas fa-file-excel" style="color:var(--G);"></i> ${escHtml(f.name)} — ${importParsedRows.length} baris terdeteksi, ${matched.length}/${PRODUKSI_COLS.length} kolom cocok` +
-        (missing.length ? `<br><span style="color:var(--Y);">Kolom tidak ditemukan (akan diisi 0/kosong): ${missing.join(', ')}</span>` : '');
+      document.getElementById('fi-info').innerHTML = `<i class="fas fa-file-excel" style="color:var(--G);"></i> ${escHtml(f.name)} — ${importParsedRows.length} baris terdeteksi, ${matched.length}/${currentImportCols.length} kolom cocok untuk sheet <b>${escHtml(sheet)}</b>` +
+        (missing.length ? `<br><span style="color:var(--Y);">Kolom tidak ditemukan (akan diisi kosong): ${missing.join(', ')}</span>` : '');
 
       renderPreview(importParsedRows);
       document.getElementById('prev-area').style.display='block';
@@ -2679,20 +3508,30 @@ function renderPreview(rows){
     html += '<tr>'+cols.map(c=>`<td>${escHtml(r[c])}</td>`).join('')+'</tr>';
   });
   html += '</tbody>';
-  if(rows.length>15) html += `<tfoot><tr><td colspan="${cols.length}" style="opacity:.5;font-size:.65rem;">...dan ${rows.length-15} baris lainnya</td></tr></tfoot>`;
+  if(rows.length>15) html += `<tfoot><tr><td colspan="${cols.length}" style="opacity:.5;font-size:0.754rem;">...dan ${rows.length-15} baris lainnya</td></tr></tfoot>`;
   table.innerHTML = html;
 }
 
 async function doImport(){
+  const sheet = document.getElementById('imp-sheet').value;
+  if(!sheet){ showToast('Pilih sheet tujuan terlebih dahulu', true); return; }
   if(!importParsedRows.length){ showToast('Tidak ada data untuk diimpor', true); return; }
   if(!API_URL){ showToast('Backend belum dikonfigurasi', true); return; }
   const btn = document.getElementById('btn-import');
-  btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch spin"></i> Mengirim ke Sheet...';
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch spin"></i> Mengirim...';
   try{
-    const r = await api('importProduksiBulk', {rows: importParsedRows, username: currentUser?currentUser.username:'system'}, 'POST');
-    showToast(`Import selesai: ${r.success} berhasil, ${r.failed} gagal dari ${r.total} baris.`);
+    const action = (sheet==='Produksi') ? 'importProduksiBulk' : 'importSheetBulk';
+    const payload = sheet==='Produksi'
+      ? {rows: importParsedRows, username: currentUser?currentUser.username:'system'}
+      : {sheet, rows: importParsedRows, username: currentUser?currentUser.username:'system'};
+    const r = await api(action, payload, 'POST');
+    showToast(`Import ke sheet ${sheet} selesai: ${r.success} berhasil, ${r.failed} gagal dari ${r.total} baris.`);
     resetImport();
+    document.getElementById('imp-sheet').value = sheet;
+    onImportSheetChange();
     loadImportHistory();
+    if(sheet==='Blok' && typeof loadBlok==='function') loadBlok();
+    if(sheet==='BudgetMaterial' && typeof loadBudgetMaterial==='function') loadBudgetMaterial();
   }catch(e){
     showToast('Import gagal: '+e.message, true);
   }finally{
@@ -2932,7 +3771,7 @@ function renderPerawatan(){
         const vals = pw.map(rr=>rowGet(rr,f.key)).filter(v=>v!=='');
         return `<div class="kc fx"><div class="kico ${f.color}"><i class="fas ${f.icon}"></i></div><div>
           <div class="klbl">Rot. Terakhir ${f.label}</div>
-          <div class="kvl ${f.color}" style="font-size:1.05rem;">${escHtml(fmtTgl(vals[vals.length-1]||''))}</div>
+          <div class="kvl ${f.color}" style="font-size:1.218rem;">${escHtml(fmtTgl(vals[vals.length-1]||''))}</div>
           <div class="ksub">Tanggal rotasi terakhir</div>
         </div></div>`;
       }).join('')}
@@ -2998,7 +3837,7 @@ function renderPerawatan(){
     </div>
     <div class="cc" style="margin-bottom:14px;">
       <div class="cc-t"><i class="fas fa-chart-bar"></i> Realisasi <span style="color:var(--G)">(balok)</span> vs Rekom KG <span style="color:var(--Au)">(garis)</span> per Tahun &amp; Jenis</div>
-      <div style="font-size:.58rem;opacity:.4;padding:2px 16px 4px;color:var(--TL);">Kolom terdeteksi: ${escHtml(colInfo)}</div>
+      <div style="font-size:0.673rem;opacity:.4;padding:2px 16px 4px;color:var(--TL);">Kolom terdeteksi: ${escHtml(colInfo)}</div>
       <div id="ch-pupuk-jenis"></div>
     </div>`;
   } else {
@@ -3286,7 +4125,7 @@ function renderPerblok(){
     </div>`;
 
     // Tabel AFD
-    html += `<div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table-list"></i> Detail per AFD</span><span style="font-size:.6rem;opacity:.5;">${afdArr2.length} AFD</span></div>
+    html += `<div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table-list"></i> Detail per AFD</span><span style="font-size:0.696rem;opacity:.5;">${afdArr2.length} AFD</span></div>
       <div class="tw" style="max-height:320px;"><table class="tbl"><thead><tr>
         <th>AFD</th><th>Blok</th><th>Ton Aktual</th><th>Budget Ton</th><th>Sensus Ton</th><th>Ach Bud%</th><th>BJR (Kg)</th><th>Rotasi</th>
       </tr></thead><tbody>
@@ -3362,7 +4201,7 @@ function renderPerblok(){
     </div>`;
 
     // Tabel Blok detail
-    html += `<div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table-list"></i> Detail per Blok</span><span style="font-size:.6rem;opacity:.5;">${blokArr.length} blok</span></div>
+    html += `<div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table-list"></i> Detail per Blok</span><span style="font-size:0.696rem;opacity:.5;">${blokArr.length} blok</span></div>
       <div class="tw" style="max-height:360px;"><table class="tbl"><thead><tr>
         <th>Blok</th><th>Ton Aktual</th><th>Budget Ton</th><th>Sensus Ton</th><th>Ach Bud%</th><th>Ach Sen%</th><th>BJR (Kg)</th><th>JJG</th><th>Rotasi</th>
       </tr></thead><tbody>
@@ -3440,14 +4279,14 @@ function render(id){
   if(id==='dashboard') loadDashboard();
   else if(id==='perkebun') loadPerKebun();
   else if(id==='perblok') loadPerblok();
-  else if(id==='import') loadImportHistory();
+  else if(id==='import'){ loadImportHistory(); loadImportableSheets(); }
   else if(id==='mblok') loadBlok();
-  else if(id==='mbudget') loadBudget();
+  else if(id==='mbudget'){ loadBudget(); loadBudgetMaterial(); if(!blokRows.length) loadBlok(); else rmFillBlokList(); }
   else if(id==='muser') loadUsers();
   else if(id==='pks') loadPKS();
   else if(id==='perawatan') loadPerawatan();
   else if(id==='audit') loadAudit();
-  else if(id==='settings'){ refreshCacheSummary(); refreshOutboxSummary(); }
+  else if(id==='settings'){ refreshCacheSummary(); refreshOutboxSummary(); probeExcelPanel(); renderAllBlokDimSettings(); }
 }
 
 window.addEventListener('DOMContentLoaded', async ()=>{
