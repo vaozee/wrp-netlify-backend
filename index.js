@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  WAR ROOM PLANTATION — BACKEND (Google Apps Script)
+ *  WAR ROOM PLANTATION — BACKEND + FRONTEND (Google Apps Script, 1 project)
  * ============================================================================
  *  Sheet sumber : "History Produksi"  (tab: Produksi)
  *                 "DB PKS"            (tab: PKS)
@@ -10,26 +10,33 @@
  *    - Users       (akun login)
  *    - AuditLog    (rekam jejak aktivitas)
  *
+ *  Script ini sekarang menyatukan BACKEND (API) dan FRONTEND (dashboard HTML)
+ *  dalam SATU project Apps Script, jadi cukup 1 URL deployment untuk semuanya.
+ *
  *  CARA DEPLOY:
  *  1. Buka https://script.google.com -> New Project
- *  2. Hapus isi default, paste SEMUA kode ini
- *  3. Ganti SPREADSHEET_ID_PRODUKSI & SPREADSHEET_ID_PKS di bawah jika perlu
+ *  2. Hapus isi default Code.gs, paste SEMUA kode file "Code.gs" ini
+ *  3. Di sidebar kiri klik "+" -> "HTML" -> beri nama file persis "Index"
+ *     -> paste seluruh isi file "Index.html" yang disertakan ke sana
+ *  4. Ganti SPREADSHEET_ID_PRODUKSI & SPREADSHEET_ID_PKS di bawah jika perlu
  *     (sudah saya isi otomatis dari file Anda)
- *  4. Jalankan fungsi `setupSheets` SEKALI dari editor (klik Run) untuk
+ *  5. Jalankan fungsi `setupSheets` SEKALI dari editor (klik Run) untuk
  *     membuat tab Blok/Budget/Users/AuditLog + header otomatis.
  *     -> Saat pertama run, Google akan minta otorisasi akses sheet. Izinkan.
- *  5. Klik "Deploy" -> "New deployment" -> pilih tipe "Web app"
+ *  6. Klik "Deploy" -> "New deployment" -> pilih tipe "Web app"
  *     - Execute as: Me
  *     - Who has access: Anyone (atau "Anyone with Google account")
- *  6. Copy URL deployment (...../exec) -> paste ke Settings dashboard HTML
- *  7. Setiap kali Anda EDIT kode ini, harus "Manage deployments" -> Edit ->
- *     New version, supaya URL yang sama menjalankan kode terbaru.
+ *  7. Copy URL deployment (...../exec) -> buka langsung di browser, dashboard
+ *     akan tampil dan otomatis terhubung ke API-nya sendiri (tidak perlu
+ *     mengisi kolom Settings > Apps Script Web App URL secara manual).
+ *  8. Setiap kali Anda EDIT kode/HTML ini, harus "Manage deployments" -> Edit
+ *     -> New version, supaya URL yang sama menjalankan kode terbaru.
  * ============================================================================
  */
 
 // ── KONFIGURASI ──────────────────────────────────────────────────────────
-const SPREADSHEET_ID_PRODUKSI = '15VzZknIpWjCKGnqPO1DAW5cJN2y5ooFHHqhNjZ37LWA'; // History Produksi
-const SPREADSHEET_ID_PKS      = '1ZI2Buqb-TmePjC1Sp-53J1s0T_wVcPUgYKObIqwnEpM'; // DB PKS
+const SPREADSHEET_ID_PRODUKSI = '1IDDmbxOxu1XPFNhJx4XEKiCu_HOrnpJi'; // History Produksi
+const SPREADSHEET_ID_PKS      = '1IDDmbxOxu1XPFNhJx4XEKiCu_HOrnpJi'; // DB PKS
 
 const SHEET_PRODUKSI = 'Produksi';
 const SHEET_PKS       = 'PKS';
@@ -38,10 +45,10 @@ const SHEET_BUDGET    = 'Budget';
 const SHEET_USERS     = 'Users';
 const SHEET_AUDIT     = 'AuditLog';
 const SHEET_HARIAN    = 'Harian';        // tab baru di spreadsheet Produksi
-const SHEET_PKS_HARIAN = 'Harian';       // tab baru di spreadsheet PKS (nama sama, file berbeda)
-const SHEET_PERAWATAN  = 'perawatan';    // tab perawatan di DB PKS
-const SHEET_HIST_PUPUK = 'hist pupuk';   // tab hist pupuk di DB PKS
-const SHEET_PEM_BLOK   = 'pemupukan blok'; // tab pemupukan blok di DB PKS
+const SHEET_PKS_HARIAN = 'PksHarian';    // tab baru di spreadsheet PKS
+const SHEET_PERAWATAN  = 'Perawatan';    // tab perawatan di DB PKS
+const SHEET_HIST_PUPUK = 'HistPupuk';    // tab hist pupuk di DB PKS
+const SHEET_PEM_BLOK   = 'PemupukanBlok'; // tab pemupukan blok di DB PKS
 
 // Kolom asli tab "Produksi" (urutan HARUS sama dengan sheet asli Anda)
 // TANGGAL ditambahkan di akhir (kolom ke-24) - data lama akan kosong untuk kolom ini,
@@ -67,10 +74,26 @@ const HARIAN_COLS = ['TANGGAL','KEBUN','AFD','JJG','KG','HK','RESTAN_KG'];
 const PKS_HARIAN_COLS = ['TANGGAL','TAHUN','BULAN','KEGIATAN','SER','DATA','SAT','ACTUAL','BUDGET'];
 
 // ── ENTRY POINTS ─────────────────────────────────────────────────────────
+// doGet menangani 2 mode:
+//   1) Tanpa parameter "action"  -> tampilkan halaman dashboard (Index.html)
+//      Dipakai saat URL .../exec dibuka langsung di browser.
+//   2) Dengan parameter "action" -> jalankan sebagai API JSON biasa
+//      Dipakai oleh fetch() di dalam Index.html (mode GET) maupun aplikasi lain.
 function doGet(e) {
-  return handleRequest(e);
+  if (e && e.parameter && e.parameter.action) {
+    return handleRequest(e);
+  }
+  const tmpl = HtmlService.createTemplateFromFile('Index');
+  // scriptUrl = URL deployment Web App ini sendiri, otomatis diisi ke kolom
+  // "Apps Script Web App URL" di halaman Settings sehingga tidak perlu diisi manual.
+  tmpl.scriptUrl = ScriptApp.getService().getUrl();
+  return tmpl.evaluate()
+    .setTitle('War Room Plantation')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 function doPost(e) {
+  // POST selalu dianggap panggilan API (dipakai fetch() method POST di Index.html)
   return handleRequest(e);
 }
 
@@ -184,7 +207,7 @@ function setupSheets() {
   if (usersSheet.getLastRow() <= 1) {
     const salt = generateSalt();
     const hash = hashPassword('admin123', salt);
-    usersSheet.appendRow(['admin', 'Super Admin', 'admin@psam.id', hash, salt,
+    appendRowShifted(usersSheet, ['admin', 'Super Admin', 'admin@psam.id', hash, salt,
       'Super Admin', 'Semua', 'Aktif', '']);
     Logger.log('User default dibuat -> username: admin / password: admin123 (HARAP DIGANTI)');
   }
@@ -195,26 +218,45 @@ function ensureSheet(ss, name, cols) {
   let sh = ss.getSheetByName(name);
   if (!sh) {
     sh = ss.insertSheet(name);
-    sh.appendRow(cols);
+    sh.appendRow(['_row'].concat(cols));
     sh.setFrozenRows(1);
   } else if (sh.getLastRow() === 0) {
-    sh.appendRow(cols);
+    sh.appendRow(['_row'].concat(cols));
     sh.setFrozenRows(1);
   }
   return sh;
 }
 
 // ── HELPERS ──────────────────────────────────────────────────────────────
+// PENTING: semua sheet sumber (Produksi, Harian, PKS, PksHarian, Blok, Budget,
+// Users, AuditLog) punya kolom "_row" (nomor urut) di KOLOM A. Data sebenarnya
+// baru mulai di kolom B. Karena itu semua baca/tulis berbasis posisi kolom di
+// bawah ini digeser +1 (skip kolom A) supaya tidak salah baca/tulis.
 function sheetToObjects(sheet, colNames) {
   const lastRow = sheet.getLastRow();
-  const lastCol = sheet.getLastColumn();
   if (lastRow < 2) return [];
-  const data = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  const data = sheet.getRange(2, 2, lastRow - 1, colNames.length).getValues();
   return data.map(row => {
     const obj = {};
     colNames.forEach((c, i) => { obj[c] = row[i] !== undefined ? row[i] : ''; });
     return obj;
   }).filter(o => Object.values(o).some(v => v !== '' && v !== null));
+}
+
+// Tambah satu baris data; kolom A ("_row") otomatis diisi nomor urut berikutnya,
+// data sebenarnya (dataArr) ditulis mulai kolom B.
+function appendRowShifted(sh, dataArr) {
+  const nextRowPos = sh.getLastRow() + 1;
+  const nextIdx = nextRowPos - 1; // nomor urut data (baris 1 = header)
+  sh.getRange(nextRowPos, 1, 1, dataArr.length + 1).setValues([[nextIdx].concat(dataArr)]);
+}
+
+// Tambah banyak baris sekaligus (bulk import), "_row" tetap terisi berurutan.
+function appendRowsShifted(sh, rowsData) {
+  if (!rowsData.length) return;
+  const startPos = sh.getLastRow() + 1;
+  const toAppend = rowsData.map((r, i) => [startPos - 1 + i].concat(r));
+  sh.getRange(startPos, 1, toAppend.length, toAppend[0].length).setValues(toAppend);
 }
 
 function generateSalt() {
@@ -314,7 +356,7 @@ function addHarian(p) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID_PRODUKSI);
   const sh = ensureSheet(ss, SHEET_HARIAN, HARIAN_COLS);
   const row = HARIAN_COLS.map(c => p[c] !== undefined ? p[c] : '');
-  sh.appendRow(row);
+  appendRowShifted(sh, row);
   logAudit(p.username || 'system', 'Input Harian', `Input harian produksi ${p.KEBUN || ''} ${p.AFD || ''} tgl ${p.TANGGAL || ''}`);
   return { ok: true };
 }
@@ -344,7 +386,7 @@ function addProduksi(p) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID_PRODUKSI);
   const sh = ss.getSheetByName(SHEET_PRODUKSI);
   const row = PRODUKSI_COLS.map(c => p[c] !== undefined ? p[c] : (p[c.toLowerCase()] !== undefined ? p[c.toLowerCase()] : ''));
-  sh.appendRow(row);
+  appendRowShifted(sh, row);
   logAudit(p.username || 'system', 'Produksi', `Tambah data produksi ${p.KEBUN || ''} ${p.AFD || ''} (${p.BULAN || ''}/${p.TAHUN || ''})`);
   return { ok: true };
 }
@@ -368,7 +410,7 @@ function importProduksiBulk(p) {
     }
   });
   if (toAppend.length) {
-    sh.getRange(sh.getLastRow() + 1, 1, toAppend.length, PRODUKSI_COLS.length).setValues(toAppend);
+    appendRowsShifted(sh, toAppend);
   }
   logAudit(p.username || 'system', 'Import', `Import bulk produksi: ${success} berhasil, ${failed} gagal`);
   return { ok: true, success, failed, total: rows.length };
@@ -412,7 +454,7 @@ function addPksHarian(p) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID_PKS);
   const sh = ensureSheet(ss, SHEET_PKS_HARIAN, PKS_HARIAN_COLS);
   const row = PKS_HARIAN_COLS.map(c => p[c] !== undefined ? p[c] : '');
-  sh.appendRow(row);
+  appendRowShifted(sh, row);
   logAudit(p.username || 'system', 'Input Harian PKS', `Input harian PKS ${p.KEGIATAN || ''} tgl ${p.TANGGAL || ''}`);
   return { ok: true };
 }
@@ -431,7 +473,7 @@ function addPksHarianBatch(p) {
     if (c === 'BULAN') return p.BULAN || '';
     return r[c] !== undefined ? r[c] : '';
   }));
-  sh.getRange(sh.getLastRow() + 1, 1, toAppend.length, PKS_HARIAN_COLS.length).setValues(toAppend);
+  appendRowsShifted(sh, toAppend);
   logAudit(p.username || 'system', 'Input Harian PKS', `Input batch harian PKS tgl ${p.TANGGAL || ''} (${rows.length} item)`);
   return { ok: true, count: rows.length };
 }
@@ -448,7 +490,7 @@ function getBlok(p) {
 function addBlok(p) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID_PRODUKSI);
   const sh = ensureSheet(ss, SHEET_BLOK, BLOK_COLS);
-  sh.appendRow(BLOK_COLS.map(c => p[c] !== undefined ? p[c] : ''));
+  appendRowShifted(sh, BLOK_COLS.map(c => p[c] !== undefined ? p[c] : ''));
   logAudit(p.username || 'system', 'Master Blok', `Tambah blok ${p.KODE || ''}`);
   return { ok: true };
 }
@@ -457,7 +499,7 @@ function updateBlok(p) {
   const sh = ensureSheet(ss, SHEET_BLOK, BLOK_COLS);
   if (!p._row) return { ok: false, error: 'Baris (_row) wajib diisi untuk update' };
   const rowVals = BLOK_COLS.map(c => p[c] !== undefined ? p[c] : '');
-  sh.getRange(p._row, 1, 1, BLOK_COLS.length).setValues([rowVals]);
+  sh.getRange(p._row, 2, 1, BLOK_COLS.length).setValues([rowVals]);
   logAudit(p.username || 'system', 'Master Blok', `Edit blok ${p.KODE || ''}`);
   return { ok: true };
 }
@@ -491,9 +533,9 @@ function setBudget(p) {
     String(r.BULAN) === String(p.BULAN) && String(r.ESTATE) === String(p.ESTATE));
   const rowVals = BUDGET_COLS.map(c => p[c] !== undefined ? p[c] : '');
   if (idx >= 0) {
-    sh.getRange(idx + 2, 1, 1, BUDGET_COLS.length).setValues([rowVals]);
+    sh.getRange(idx + 2, 2, 1, BUDGET_COLS.length).setValues([rowVals]);
   } else {
-    sh.appendRow(rowVals);
+    appendRowShifted(sh, rowVals);
   }
   logAudit(p.username || 'system', 'Master Budget', `Set budget ${p.ESTATE || ''} ${p.BULAN || ''}/${p.TAHUN || ''} = ${p.BUDGET_KG || 0} Kg`);
   return { ok: true };
@@ -518,7 +560,7 @@ function addUser(p) {
   const sh = ensureSheet(ss, SHEET_USERS, USERS_COLS);
   const salt = generateSalt();
   const hash = hashPassword(p.PASSWORD || 'changeme123', salt);
-  sh.appendRow([p.USERNAME || '', p.NAMA || '', p.EMAIL || '', hash, salt,
+  appendRowShifted(sh, [p.USERNAME || '', p.NAMA || '', p.EMAIL || '', hash, salt,
     p.ROLE || 'Viewer', p.ESTATE_AKSES || 'Semua', p.STATUS || 'Aktif', '']);
   logAudit(p.username || 'system', 'Master User', `Tambah user ${p.USERNAME || ''} (${p.ROLE || ''})`);
   return { ok: true };
@@ -528,7 +570,7 @@ function updateUser(p) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID_PRODUKSI);
   const sh = ensureSheet(ss, SHEET_USERS, USERS_COLS);
   if (!p._row) return { ok: false, error: 'Baris (_row) wajib diisi' };
-  const existing = sh.getRange(p._row, 1, 1, USERS_COLS.length).getValues()[0];
+  const existing = sh.getRange(p._row, 2, 1, USERS_COLS.length).getValues()[0];
   const obj = {};
   USERS_COLS.forEach((c, i) => obj[c] = existing[i]);
   // Update field yang dikirim saja, kecuali password
@@ -541,7 +583,7 @@ function updateUser(p) {
     obj.SALT = salt;
   }
   const rowVals = USERS_COLS.map(c => obj[c]);
-  sh.getRange(p._row, 1, 1, USERS_COLS.length).setValues([rowVals]);
+  sh.getRange(p._row, 2, 1, USERS_COLS.length).setValues([rowVals]);
   logAudit(p.username || 'system', 'Master User', `Edit user ${obj.USERNAME || ''}`);
   return { ok: true };
 }
@@ -574,7 +616,7 @@ function login(p) {
     return { ok: false, error: 'Username atau password salah' };
   }
   // Update last login
-  sh.getRange(idx + 2, USERS_COLS.indexOf('LAST_LOGIN') + 1).setValue(new Date().toISOString());
+  sh.getRange(idx + 2, USERS_COLS.indexOf('LAST_LOGIN') + 2).setValue(new Date().toISOString());
   logAudit(p.username, 'Login', 'Login berhasil');
   return {
     ok: true,
@@ -606,7 +648,7 @@ function logAudit(username, kategori, aksi) {
   try {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID_PRODUKSI);
     const sh = ensureSheet(ss, SHEET_AUDIT, AUDIT_COLS);
-    sh.appendRow([new Date().toISOString(), username, kategori, aksi, '']);
+    appendRowShifted(sh, [new Date().toISOString(), username, kategori, aksi, '']);
   } catch (e) {
     Logger.log('Gagal mencatat audit: ' + e.message);
   }
@@ -637,7 +679,7 @@ function getPerawatan(p) {
     const thn = r.TAHUN || r.YEAR || r.PERIODE || '';
     return !thn || String(thn) === String(p.tahun);
   });
-  if (p.kebun) rows = rows.filter(r => (String(r.KEBUN||r.ESTATE||'')).toUpperCase() === String(p.kebun).toUpperCase());
+  if (p.kebun) rows = rows.filter(r => (String(r.KEBUN||r.KBN||r.ESTATE||'')).toUpperCase() === String(p.kebun).toUpperCase());
   if (p.afd) rows = rows.filter(r => (String(r.AFD||'')).toUpperCase() === String(p.afd).toUpperCase());
   if (p.blok) rows = rows.filter(r => (String(r.BLOK||r.KODE_BLOK||'')).toUpperCase() === String(p.blok).toUpperCase());
 
@@ -660,7 +702,7 @@ function getHistPupuk(p) {
   let rows = dataRange.map(row => {
     const obj = {};
     headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? row[i] : ''; });
-    ['REALISASI_KG','REKOM_KG','REALISASI','REKOM'].forEach(k => { if(obj[k]!==undefined) obj[k] = parseNum(obj[k]); });
+    ['REALISASI_KG','REKOM_KG','REALISASI','REKOM','REKOM_(KG)','REALISASI_(KG)','VARIANT_(%)'].forEach(k => { if(obj[k]!==undefined) obj[k] = parseNum(obj[k]); });
     return obj;
   }).filter(o => Object.values(o).some(v => v !== '' && v !== null));
 
@@ -708,7 +750,7 @@ function getPemupukanBlok(p) {
 // Filter: tahun (kolom TAHUN/TAHUN_PANEN), kebun, afd, blok
 function getPerblok(p) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID_PRODUKSI);
-  const sh = ss.getSheetByName('perblok');
+  const sh = ss.getSheetByName('Perblok');
   if (!sh) return { ok: true, count: 0, data: [], note: 'Sheet "perblok" tidak ditemukan di History Produksi.' };
   const lastRow = sh.getLastRow();
   const lastCol = sh.getLastColumn();
