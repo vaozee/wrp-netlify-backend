@@ -326,6 +326,32 @@ body::after{width:480px;height:480px;bottom:-160px;left:200px;background:radial-
 .rm-total-val{font-family:'Courier New',monospace;font-size:1.42rem;font-weight:700;color:var(--G);
   text-shadow:0 0 14px rgba(34,197,94,.35);letter-spacing:.3px;transition:opacity .15s;}
 .rm-total-val.warn{color:var(--Y);text-shadow:none;font-size:1rem;font-family:'Roboto',sans-serif;font-weight:500;}
+
+/* ═══ Peta Blok — denah/site map afdeling × nomor blok ═══ */
+.pm-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+.pm-legend{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:0.719rem;color:var(--TL);opacity:.75;margin-left:auto;}
+.pm-legend span{display:inline-flex;align-items:center;gap:5px;}
+.pm-legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+.pm-wrap{overflow:auto;border-radius:14px;border:1px solid var(--BD);background:linear-gradient(135deg,var(--C1),var(--C2));padding:14px;max-height:640px;}
+.pm-grid{display:grid;gap:4px;width:max-content;}
+.pm-cell{display:flex;align-items:center;justify-content:center;font-size:0.65rem;}
+.pm-rowlbl{position:sticky;left:0;z-index:2;font-weight:700;color:var(--Au);background:linear-gradient(135deg,var(--C1),var(--C2));min-width:34px;padding:0 4px;border-radius:6px;}
+.pm-collbl{position:sticky;top:0;z-index:1;color:var(--TL);opacity:.55;font-weight:600;font-size:0.6rem;background:linear-gradient(135deg,var(--C1),var(--C2));}
+.pm-corner{position:sticky;left:0;top:0;z-index:3;background:linear-gradient(135deg,var(--C1),var(--C2));}
+.pm-box{width:46px;height:34px;border-radius:7px;border:1px solid var(--BD);background:rgba(255,255,255,.04);color:var(--T);font-weight:700;cursor:pointer;transition:all .14s;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;padding:1px;}
+.pm-box:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 5px 14px rgba(34,197,94,.35);border-color:var(--G);z-index:1;}
+.pm-box.tm{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.45);color:#8ff0ae;}
+.pm-box.tbm{background:rgba(245,158,11,.16);border-color:rgba(245,158,11,.45);color:var(--Y);}
+.pm-box.rep{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.45);color:#ff9d9d;}
+.pm-box.unk{background:rgba(255,255,255,.05);border-color:var(--BD);color:var(--TL);opacity:.75;}
+.pm-box.hi{outline:2px solid var(--Au);box-shadow:0 0 0 3px rgba(var(--Au-rgb),.25);}
+.pm-empty{width:46px;height:34px;}
+.pm-search-hit{font-size:0.744rem;color:var(--G);margin-left:6px;}
+.pm-unclassified{margin-top:14px;}
+.pm-detail-sec{margin-bottom:14px;}
+.pm-detail-sec h4{font-size:0.858rem;margin:0 0 8px;color:var(--Au);display:flex;align-items:center;gap:6px;}
+.pm-detail-sec h4 i{color:var(--G);}
+.pm-chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px;}
 </style>
 </head>
 <body>
@@ -444,6 +470,7 @@ body::after{width:480px;height:480px;bottom:-160px;left:200px;background:radial-
     <a class="nav-item active" data-page="dashboard" onclick="go('dashboard',this)"><i class="fas fa-seedling"></i><span class="nav-text">Produksi</span></a>
     <a class="nav-item" data-page="perkebun" onclick="go('perkebun',this)"><i class="fas fa-city"></i><span class="nav-text">Per Kebun</span></a>
     <a class="nav-item" data-page="perblok" onclick="go('perblok',this)"><i class="fas fa-map"></i><span class="nav-text">Per Blok</span></a>
+    <a class="nav-item" data-page="petablok" onclick="go('petablok',this)"><i class="fas fa-border-all"></i><span class="nav-text">Peta Blok</span></a>
     <a class="nav-item" data-page="import" data-role-restricted="1" onclick="go('import',this)"><i class="fas fa-file-import"></i><span class="nav-text">Import Produksi</span></a>
     <a class="nav-item" data-page="mblok" data-role-restricted="1" onclick="go('mblok',this)"><i class="fas fa-th-large"></i><span class="nav-text">Master Blok</span></a>
     <a class="nav-item" data-page="mbudget" onclick="go('mbudget',this)"><i class="fas fa-wallet"></i><span class="nav-text">Master Budget</span></a>
@@ -526,6 +553,28 @@ body::after{width:480px;height:480px;bottom:-160px;left:200px;background:radial-
   <div class="conn-bar-slot"></div>
   <div id="pb-content"><div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat data per blok...</div></div>
   <div class="pf">v3.0 · Per Blok · Google Sheets Backend</div>
+</section>
+
+<!-- PAGE: PETA BLOK -->
+<section class="pg" id="pg-petablok">
+  <div class="topbar"><div class="tb-left"><button class="tog-sb" onclick="toggleSB()"><i class="fas fa-bars"></i></button><div><h1>Peta Blok</h1><p>Denah blok per AFD × nomor blok — klik satu kotak untuk melihat semua detail blok tersebut</p></div></div>
+  <div class="h-actions">
+    <button class="btn btn-o" onclick="loadPetaBlok()"><i class="fas fa-sync-alt"></i> Refresh</button>
+  </div></div>
+  <div class="conn-bar-slot"></div>
+  <div class="pm-toolbar">
+    <input class="fin" style="width:200px;" type="text" id="pm-search" placeholder="🔍 Cari kode blok, mis. A45" oninput="renderPetaBlokMap()">
+    <select class="fsl" id="pm-afd" style="width:130px;" onchange="renderPetaBlokMap()"><option value="">Semua AFD</option></select>
+    <span id="pm-search-hit" class="pm-search-hit"></span>
+    <div class="pm-legend">
+      <span><i style="background:rgba(34,197,94,.5);"></i> TM / Produksi</span>
+      <span><i style="background:rgba(245,158,11,.5);"></i> TBM</span>
+      <span><i style="background:rgba(239,68,68,.5);"></i> Replanting</span>
+      <span><i style="background:rgba(255,255,255,.15);"></i> Status lain</span>
+    </div>
+  </div>
+  <div id="pm-content"><div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat denah blok...</div></div>
+  <div class="pf">v1.0 · Peta Blok · Google Sheets Backend</div>
 </section>
 
 <!-- PAGE: IMPORT PRODUKSI -->
@@ -882,6 +931,10 @@ body::after{width:480px;height:480px;bottom:-160px;left:200px;background:radial-
   </div>
   <p style="font-size:0.719rem;color:var(--TL);opacity:.6;margin-top:2px;">Untuk isi massal semua kolom Master Blok (termasuk histori luas/pokok per tahun), gunakan halaman "Import Produksi" &rarr; pilih sheet <b>Blok</b>.</p>
   <div class="fa-r"><button class="btn btn-g" onclick="submitBlok()"><i class="fas fa-save"></i> Simpan</button><button class="btn btn-o" onclick="closeM('m-blok')">Batal</button></div>
+</div></div>
+
+<div class="mo" id="m-blok-detail"><div class="md" style="width:720px;"><div class="md-h"><div class="md-t"><i class="fas fa-map-pin"></i> Detail Blok <span id="pmd-title">-</span></div><button class="md-x" onclick="closeM('m-blok-detail')">✕</button></div>
+  <div id="pmd-body"><div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat detail blok...</div></div>
 </div></div>
 
 <div class="mo" id="m-budget"><div class="md"><div class="md-h"><div class="md-t"><i class="fas fa-wallet"></i> Set Budget Produksi</div><button class="md-x" onclick="closeM('m-budget')">✕</button></div>
@@ -4275,10 +4328,258 @@ function renderPerblok(){
 /* ════════════════════════════════════════════════════════════════════════
    ROUTER & BOOTSTRAP
 ════════════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════════════
+   PETA BLOK — denah/site map blok (baris = AFD, kolom = nomor blok).
+   Klik satu kotak blok untuk melihat SEMUA detailnya lintas sheet: Master
+   Blok, Per Blok (rotasi/BJR/ton-ha), Perawatan (rotasi gawangan/piringan
+   terakhir), Hist Pupuk (rekom vs realisasi per tahun), dan Pemupukan Blok
+   (detail jenis pupuk & realisasi per tahun). Kode blok (mis. "A45") dipakai
+   sebagai kunci penghubung antar sheet — sama seperti field BLOK/CODE_BLOK
+   yang sudah dipakai di halaman Per Blok, Perawatan, & Master Budget.
+════════════════════════════════════════════════════════════════════════ */
+async function loadPetaBlok(){
+  const el = document.getElementById('pm-content');
+  el.innerHTML = '<div class="empty-state"><i class="fas fa-circle-notch spin"></i>Memuat denah blok...</div>';
+  if(!API_URL){ el.innerHTML='<div class="empty-state"><i class="fas fa-plug-circle-xmark"></i>Backend belum terhubung.</div>'; return; }
+  try{
+    const [rBlok, rPerblok, rPerawatan, rHist, rPupuk] = await Promise.all([
+      api('getBlok'),
+      api('getPerblok', {}),
+      api('getPerawatan', {}),
+      api('getHistPupuk', {}),
+      api('getPemupukanBlok', {})
+    ]);
+    blokRows          = rBlok.data || [];
+    perblokRows        = rPerblok.data || [];
+    perawatanRows       = rPerawatan.data || [];
+    histPupukRows      = rHist.data || [];
+    pemupukanBlokRows  = rPupuk.data || [];
+    populatePmAfdFilter();
+    renderPetaBlokMap();
+  }catch(e){
+    el.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i>Gagal memuat denah blok: ${escHtml(e.message)}<br><br><button class="btn btn-o btn-sm" onclick="loadPetaBlok()"><i class="fas fa-sync-alt"></i> Coba Lagi</button></div>`;
+  }
+}
+
+// Pecah kode blok mis. "A45" / "BB12" -> {afd:'A'/'BB', num:45}. Blok yang tidak
+// mengikuti pola "huruf AFD + nomor" tetap ditampilkan (di daftar terpisah di
+// bawah denah) supaya datanya tidak hilang begitu saja dari peta.
+function parsePetaKode(code){
+  const s = String(code||'').trim();
+  const m = s.match(/^([A-Za-z]+)\s*-?\s*0*(\d+)\s*$/);
+  if(!m) return null;
+  return { afd: m[1].toUpperCase(), num: parseInt(m[2],10) };
+}
+
+// Kumpulkan kode blok unik dari SEMUA sheet (Blok, Perblok, Perawatan, HistPupuk,
+// PemupukanBlok) — bukan cuma Master Blok — supaya blok yang datanya baru ada di
+// sheet produksi/perawatan (belum sempat didaftarkan di Master Blok) tetap muncul.
+function collectPetaBlokEntries(){
+  const map = new Map();
+  const addCode = code => {
+    const raw = String(code||'').trim();
+    if(!raw) return;
+    const key = raw.toUpperCase();
+    if(!map.has(key)) map.set(key, raw);
+  };
+  blokRows.forEach(r=>addCode(r.CODE_BLOK||r.KODE));
+  perblokRows.forEach(r=>addCode(rowGet(r,'BLOK','blok','KODE_BLOK')));
+  perawatanRows.forEach(r=>addCode(rowGet(r,'BLOK','blok','KODE_BLOK')));
+  histPupukRows.forEach(r=>addCode(rowGet(r,'BLOK','blok','KODE_BLOK')));
+  pemupukanBlokRows.forEach(r=>addCode(rowGet(r,'BLOK','blok','KODE_BLOK')));
+
+  const blokByCode = {};
+  blokRows.forEach(r=>{ const c=String(r.CODE_BLOK||r.KODE||'').toUpperCase(); if(c) blokByCode[c]=r; });
+
+  const entries = [];
+  map.forEach((code,key)=>{
+    const master = blokByCode[key];
+    const parsed = parsePetaKode(code);
+    entries.push({ code, status: master?(master.STATUS||''):'', afd: parsed?parsed.afd:null, num: parsed?parsed.num:null });
+  });
+  return entries;
+}
+
+function pmStatusClass(status){
+  const s = String(status||'').toUpperCase();
+  if(s.includes('TBM')) return 'tbm';
+  if(s.includes('REPLANT')) return 'rep';
+  if(s.includes('TM') || s.includes('PRODUKSI')) return 'tm';
+  return 'unk';
+}
+
+function populatePmAfdFilter(){
+  const sel = document.getElementById('pm-afd');
+  const cur = sel.value;
+  const afds = [...new Set(collectPetaBlokEntries().map(e=>e.afd).filter(Boolean))]
+    .sort((a,b)=> a.length!==b.length ? a.length-b.length : a.localeCompare(b));
+  sel.innerHTML = '<option value="">Semua AFD</option>' + afds.map(a=>`<option value="${escHtml(a)}" ${a===cur?'selected':''}>${escHtml(a)}</option>`).join('');
+}
+
+function renderPetaBlokMap(){
+  const el = document.getElementById('pm-content');
+  const entries = collectPetaBlokEntries();
+  if(!entries.length){
+    el.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data blok. Isi lewat halaman Master Blok atau Import Produksi.</div>';
+    document.getElementById('pm-search-hit').textContent = '';
+    return;
+  }
+  const search    = (document.getElementById('pm-search').value||'').trim().toUpperCase();
+  const afdFilter = document.getElementById('pm-afd').value;
+
+  const classified   = entries.filter(e=>e.afd!==null);
+  const unclassified = entries.filter(e=>e.afd===null);
+
+  const rowsSet = [...new Set(classified.map(e=>e.afd))]
+    .sort((a,b)=> a.length!==b.length ? a.length-b.length : a.localeCompare(b));
+  const colsSet = [...new Set(classified.map(e=>e.num))].sort((a,b)=>a-b);
+
+  const byPos = {};
+  classified.forEach(e=>{ byPos[e.afd+'|'+e.num] = e; });
+
+  let hitCount = 0;
+  let grid = `<div class="pm-grid" style="grid-template-columns:38px repeat(${colsSet.length},46px);">`;
+  grid += `<div class="pm-corner pm-cell"></div>`;
+  colsSet.forEach(c=>{ grid += `<div class="pm-cell pm-collbl">${String(c).padStart(2,'0')}</div>`; });
+  rowsSet.forEach(rowAfd=>{
+    grid += `<div class="pm-cell pm-rowlbl">${escHtml(rowAfd)}</div>`;
+    colsSet.forEach(c=>{
+      const e = byPos[rowAfd+'|'+c];
+      if(!e){ grid += `<div class="pm-empty"></div>`; return; }
+      const isHit = !!(search && e.code.toUpperCase().includes(search));
+      if(isHit) hitCount++;
+      const filteredOut = !!(afdFilter && e.afd!==afdFilter);
+      const cls   = pmStatusClass(e.status) + (isHit?' hi':'');
+      const style = filteredOut ? 'opacity:.22;' : '';
+      grid += `<button type="button" class="pm-box ${cls}" style="${style}" title="Blok ${escHtml(e.code)}${e.status?' — '+escHtml(e.status):''}" onclick="openPetaBlokDetail('${escHtml(e.code)}')">${escHtml(e.code)}</button>`;
+    });
+  });
+  grid += `</div>`;
+
+  document.getElementById('pm-search-hit').textContent = search ? `${hitCount} blok cocok` : '';
+
+  let html = `<div class="pm-wrap">${grid}</div>`;
+  if(unclassified.length){
+    html += `<div class="pm-unclassified cc"><div class="cc-t"><i class="fas fa-triangle-exclamation"></i> Blok Belum Sesuai Format AFD+Nomor (${unclassified.length})</div>
+      <p style="font-size:0.744rem;color:var(--TL);opacity:.6;margin-bottom:8px;">Kode di bawah tidak berpola "huruf AFD + nomor" (mis. "A45"), sehingga belum bisa ditempatkan di denah — tetap bisa dibuka detailnya.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      ${unclassified.map(e=>`<button type="button" class="btn btn-o btn-sm" onclick="openPetaBlokDetail('${escHtml(e.code)}')"><i class="fas fa-map-pin"></i> ${escHtml(e.code)}</button>`).join('')}
+      </div></div>`;
+  }
+  el.innerHTML = html;
+}
+
+// Format tanggal dari Date object / string -> dd/mm/yyyy (dipakai juga di renderPerawatan)
+function pmFmtTgl(v){
+  if(!v||v==='') return '-';
+  let d = (v instanceof Date)?v:new Date(v);
+  if(isNaN(d.getTime())) return String(v);
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+// Modal detail blok: agregasi SEMUA sheet yang punya kolom BLOK/CODE_BLOK
+// yang cocok dengan kode blok yang diklik di denah.
+function openPetaBlokDetail(code){
+  const key   = String(code||'').trim();
+  const upKey = key.toUpperCase();
+  document.getElementById('pmd-title').textContent = key;
+  const body = document.getElementById('pmd-body');
+
+  const master = blokRows.find(r=>String(r.CODE_BLOK||r.KODE||'').toUpperCase()===upKey);
+  const perblok = perblokRows.filter(r=>String(rowGet(r,'BLOK','blok','KODE_BLOK')).toUpperCase()===upKey)
+    .sort((a,b)=> String(b.TAHUN||'').localeCompare(String(a.TAHUN||'')) || String(b.BULAN||'').localeCompare(String(a.BULAN||'')));
+  const perawatan = perawatanRows.filter(r=>String(rowGet(r,'BLOK','blok','KODE_BLOK')).toUpperCase()===upKey);
+  const hist = histPupukRows.filter(r=>String(rowGet(r,'BLOK','blok','KODE_BLOK')).toUpperCase()===upKey)
+    .sort((a,b)=> String(b.TAHUN||'').localeCompare(String(a.TAHUN||'')));
+  const pupuk = pemupukanBlokRows.filter(r=>String(rowGet(r,'BLOK','blok','KODE_BLOK')).toUpperCase()===upKey);
+
+  let html = '';
+
+  // ── Info Umum (Master Blok) ──
+  html += `<div class="pm-detail-sec"><h4><i class="fas fa-circle-info"></i> Info Umum</h4>`;
+  if(master){
+    const ha = blokHa(master), pkk = blokPkk(master), sph = blokSph(master);
+    const jenisTanah = blokJenisTanah(master), topografi = blokTopografi(master);
+    html += `<div class="pm-chiprow">
+      <span class="rm-chip"><i class="fas fa-city"></i> ${escHtml(master.ESTATE||master.KBN||'-')}</span>
+      <span class="rm-chip"><i class="fas fa-layer-group"></i> AFD ${escHtml(master.AFD||'-')}</span>
+      <span class="rm-chip rm-chip-tt"><i class="fas fa-calendar"></i> TT ${escHtml(String(master.TT||master.TAHUN_TANAM||'-'))}</span>
+      ${master.STATUS?`<span class="rm-chip"><i class="fas fa-tag"></i> ${escHtml(master.STATUS)}</span>`:''}
+      ${ha?`<span class="rm-chip rm-chip-ha"><i class="fas fa-ruler-combined"></i> ${ha.toLocaleString('id-ID',{maximumFractionDigits:2})} Ha</span>`:''}
+      ${pkk?`<span class="rm-chip rm-chip-pkk"><i class="fas fa-seedling"></i> ${pkk.toLocaleString('id-ID')} Pokok</span>`:''}
+      ${sph?`<span class="rm-chip"><i class="fas fa-ruler"></i> SPH ${sph.toLocaleString('id-ID',{maximumFractionDigits:2})}</span>`:''}
+      ${jenisTanah?`<span class="rm-chip"><i class="fas fa-mound"></i> ${escHtml(jenisTanah)}</span>`:''}
+      ${topografi?`<span class="rm-chip"><i class="fas fa-mountain"></i> ${escHtml(topografi)}</span>`:''}
+    </div>`;
+  } else {
+    html += `<div class="empty-state" style="padding:14px;"><i class="fas fa-circle-info"></i>Blok ini belum terdaftar di Master Blok.</div>`;
+  }
+  html += `</div>`;
+
+  // ── Riwayat Produksi (sheet Per Blok: rotasi, BJR, ton/ha, dst) ──
+  html += `<div class="pm-detail-sec"><h4><i class="fas fa-chart-line"></i> Riwayat Produksi (${perblok.length} periode)</h4>`;
+  if(perblok.length){
+    const last = perblok[0];
+    html += `<div class="pm-chiprow" style="margin-bottom:8px;">
+      <span class="rm-chip rm-chip-tt"><i class="fas fa-rotate"></i> Rotasi Terakhir: ${escHtml(String(pbGet(last,'ROTASI','rotasi')||'-'))}</span>
+      <span class="rm-chip"><i class="fas fa-weight-scale"></i> BJR: ${pbNum(last,'BJR','bjr').toLocaleString('id-ID',{maximumFractionDigits:2})}</span>
+      <span class="rm-chip rm-chip-ha"><i class="fas fa-gauge"></i> Ton/Ha: ${pbNum(last,'TON_HA','TON/HA','ton/ha').toLocaleString('id-ID',{maximumFractionDigits:2})}</span>
+      <span class="rm-chip"><i class="fas fa-calendar-day"></i> Periode: ${escHtml(String(last.BULAN||''))}/${escHtml(String(last.TAHUN||''))}</span>
+    </div>
+    <div class="tw" style="max-height:200px;"><table class="tbl"><thead><tr><th>Thn</th><th>Bln</th><th>Rotasi</th><th>BJR</th><th>Ton</th><th>Ton/Ha</th><th>JJG/Pkk</th></tr></thead><tbody>
+    ${perblok.slice(0,24).map(r=>`<tr><td>${escHtml(String(r.TAHUN||''))}</td><td>${escHtml(String(r.BULAN||''))}</td><td>${escHtml(String(pbGet(r,'ROTASI','rotasi')||''))}</td><td>${pbNum(r,'BJR','bjr').toLocaleString('id-ID',{maximumFractionDigits:2})}</td><td>${pbNum(r,'TON','ton').toLocaleString('id-ID',{maximumFractionDigits:2})}</td><td>${pbNum(r,'TON_HA','TON/HA','ton/ha').toLocaleString('id-ID',{maximumFractionDigits:2})}</td><td>${pbNum(r,'JJG/PKK','JJG_PKK','jjg/pkk').toLocaleString('id-ID',{maximumFractionDigits:2})}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  } else {
+    html += `<div class="empty-state" style="padding:14px;"><i class="fas fa-folder-open"></i>Belum ada data produksi per blok.</div>`;
+  }
+  html += `</div>`;
+
+  // ── Perawatan (rotasi gawangan/piringan terakhir) ──
+  html += `<div class="pm-detail-sec"><h4><i class="fas fa-leaf"></i> Perawatan — Rotasi Terakhir</h4>`;
+  if(perawatan.length){
+    const p = perawatan[0];
+    html += `<div class="pm-chiprow">
+      <span class="rm-chip"><i class="fas fa-spray-can"></i> Gawangan Chemist: ${escHtml(pmFmtTgl(rowGet(p,'ROT_TERAKHIR_GAWANGAN_CHEMIST')))}</span>
+      <span class="rm-chip"><i class="fas fa-scissors"></i> Gawangan Manual: ${escHtml(pmFmtTgl(rowGet(p,'ROTTERAKHIR_GAWANGAN_MANUAL','ROT_TERAKHIR_GAWANGAN_MANUAL')))}</span>
+      <span class="rm-chip"><i class="fas fa-circle-dot"></i> Piringan Chemist: ${escHtml(pmFmtTgl(rowGet(p,'ROT_TERAKHIR_PIRINGAN_CHEMIST')))}</span>
+      <span class="rm-chip"><i class="fas fa-hand-scissors"></i> Piringan Manual: ${escHtml(pmFmtTgl(rowGet(p,'ROT_TERAKHIR_PIRINGAN_MANUAL')))}</span>
+    </div>`;
+  } else {
+    html += `<div class="empty-state" style="padding:14px;"><i class="fas fa-folder-open"></i>Belum ada data perawatan.</div>`;
+  }
+  html += `</div>`;
+
+  // ── Riwayat Pupuk — rekom vs realisasi per tahun ──
+  html += `<div class="pm-detail-sec"><h4><i class="fas fa-flask"></i> Riwayat Pupuk — Rekom vs Realisasi</h4>`;
+  if(hist.length){
+    html += `<div class="tw" style="max-height:180px;"><table class="tbl"><thead><tr><th>Tahun</th><th>Rekom (Kg)</th><th>Realisasi (Kg)</th><th>Varian (%)</th></tr></thead><tbody>
+    ${hist.map(r=>`<tr><td>${escHtml(String(r.TAHUN||''))}</td><td>${rowNum(r,'REKOM_(KG)','REKOM_KG').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_(KG)','REALISASI_KG').toLocaleString('id-ID')}</td><td>${escHtml(String(rowGet(r,'VARIANT_(%)','VARIANT_PCT')||''))}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  } else {
+    html += `<div class="empty-state" style="padding:14px;"><i class="fas fa-folder-open"></i>Belum ada riwayat pupuk.</div>`;
+  }
+  html += `</div>`;
+
+  // ── Rekomendasi & Realisasi Pemupukan per jenis pupuk (sheet Pemupukan Blok) ──
+  html += `<div class="pm-detail-sec"><h4><i class="fas fa-vial"></i> Rekomendasi &amp; Realisasi Pemupukan</h4>`;
+  if(pupuk.length){
+    html += `<div class="tw" style="max-height:220px;"><table class="tbl"><thead><tr><th>Jenis Pupuk</th><th>Kg/Pokok</th><th>Rekom Total (Kg)</th><th>Real 2026 (Kg)</th><th>Real 2025 (Kg)</th><th>Real 2024 (Kg)</th></tr></thead><tbody>
+    ${pupuk.map(r=>`<tr><td>${escHtml(String(rowGet(r,'JENIS_PUPUK')||''))}</td><td>${rowNum(r,'KG_PER_POKOK').toLocaleString('id-ID',{maximumFractionDigits:3})}</td><td>${rowNum(r,'REKOM_TOTAL_KG').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_KG_2026').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_KG_2025').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_KG_2024').toLocaleString('id-ID')}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  } else {
+    html += `<div class="empty-state" style="padding:14px;"><i class="fas fa-folder-open"></i>Belum ada data rekomendasi pemupukan.</div>`;
+  }
+  html += `</div>`;
+
+  body.innerHTML = html;
+  openM('m-blok-detail');
+}
+
 function render(id){
   if(id==='dashboard') loadDashboard();
   else if(id==='perkebun') loadPerKebun();
   else if(id==='perblok') loadPerblok();
+  else if(id==='petablok') loadPetaBlok();
   else if(id==='import'){ loadImportHistory(); loadImportableSheets(); }
   else if(id==='mblok') loadBlok();
   else if(id==='mbudget'){ loadBudget(); loadBudgetMaterial(); if(!blokRows.length) loadBlok(); else rmFillBlokList(); }
