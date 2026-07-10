@@ -1983,10 +1983,19 @@ function parseIdNum(v){
   let s = String(v).trim();
   if(s==='') return 0;
   if(s.includes(',')){
+    // Format Indonesia penuh: titik = ribuan, koma = desimal (mis. "1.234,5" -> 1234.5)
     s = s.replace(/\./g,'').replace(',', '.');
-  } else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)){
+  } else if(/^-?\d{1,3}(\.\d{3}){2,}$/.test(s)){
+    // HANYA anggap titik sebagai pemisah ribuan kalau ada MINIMAL 2 grup
+    // 3-digit (mis. "1.234.567") — pola itu tidak mungkin desimal asli.
+    // Satu grup saja ("1.234" atau "0.175") SENGAJA TIDAK masuk sini lagi:
+    // dulu regex ini juga cocok untuk 1 grup, jadi angka desimal biasa
+    // seperti dosis pupuk "0.175" kg/pokok ikut dianggap ribuan dan
+    // salah dibaca jadi "175" (bug "titik/koma" di Peta Rekom Pupuk/Pkk).
     s = s.replace(/\./g,'');
   }
+  // else: satu titik dengan 1 grup ("12.5", "0.5", "0.175", "136") -> titik
+  // desimal biasa, dibiarkan apa adanya.
   const n = parseFloat(s);
   return isFinite(n) ? n : 0;
 }
@@ -2030,12 +2039,35 @@ function blokPkk(blok){
 // Areal) — nama field ini juga kadang berbeda format antara backend online
 // (Google Apps Script) dan lokal, jadi tabel Master Blok bisa tampil kosong
 // walau datanya sebenarnya ada.
+// PERBAIKAN (bug "Jenis Tanah/Topografi tidak kebaca dari spreadsheet
+// online"): dulu fungsi ini CUMA menerima kolom yang namanya PERSIS SAMA
+// (setelah dinormalisasi huruf besar/kecil & spasi/"-"/"_") dengan salah
+// satu kandidat. Backend online (Google Apps Script) sering pakai header
+// sheet apa adanya (mis. "Jenis Tanah Dominan", "Topografi Lahan/Areal",
+// atau sekadar beda susunan kata) yang TIDAK persis sama dengan kandidat
+// baku kita ("JENIS_TANAH"/"TOPOGRAFI_AREAL") — akibatnya kolom dianggap
+// "tidak ada" dan datanya (mis. isian "Ultisol", "Spodosol") tidak pernah
+// tampil walau sebenarnya ada di sheet. Sekarang ada tahap ke-2: kalau
+// tidak ada yang cocok PERSIS, cari kolom yang namanya MENGANDUNG salah
+// satu kata kunci inti (mis. "jenistanah" atau "topografi") di mana saja.
 function _pickStr(obj, candidates){
   if(!obj) return '';
   const norm = k => String(k).toLowerCase().replace(/[^a-z0-9]/g,'');
   const wanted = candidates.map(norm);
+  // Tahap 1: cocok persis (paling akurat, dipakai duluan)
   for(const key in obj){
     if(wanted.includes(norm(key))){
+      const v = obj[key];
+      if(v!==undefined && v!==null && String(v).trim()!=='') return String(v).trim();
+    }
+  }
+  // Tahap 2: fallback — kolom yang namanya MENGANDUNG salah satu kata kunci
+  // inti (kandidat terpanjang dulu, supaya "topografiareal" dicoba sebelum
+  // "topografi" biar lebih spesifik/akurat).
+  const keywords = [...new Set(wanted)].sort((a,b)=>b.length-a.length);
+  for(const key in obj){
+    const nk = norm(key);
+    if(keywords.some(w=>w && nk.includes(w))){
       const v = obj[key];
       if(v!==undefined && v!==null && String(v).trim()!=='') return String(v).trim();
     }
@@ -3720,7 +3752,14 @@ function onPwAfdChange(){
 
 // Normalize row key helper (case insensitive)
 function rowGet(r, ...keys){ for(const k of keys){ if(r[k]!==undefined && r[k]!==null && r[k]!=='') return r[k]; } return ''; }
-function rowNum(r, ...keys){ const v=rowGet(r,...keys); if(v===''||v===null) return 0; const n=parseFloat(String(v).replace(/\./g,'').replace(',','.')); return isNaN(n)?0:n; }
+// PERBAIKAN: dulu fungsi ini menghapus SEMUA titik tanpa syarat (asumsi
+// selalu format Rupiah/Kg ribuan ala Indonesia), jadi nilai desimal seperti
+// KG_PER_POKOK "0.175" ikut dihapus titiknya -> "0175" -> terbaca 175 (bug
+// "Peta Rekom Pupuk/Pkk tidak bedakan titik/koma"). Sekarang pakai logika
+// yang sama dengan parseIdNum() (titik cuma dianggap ribuan kalau ada
+// koma, atau kalau polanya jelas 2+ grup 3-digit) supaya nilai dosis kecil
+// tidak lagi salah baca, tapi angka Rupiah/Kg ribuan ("1.288.536") tetap benar.
+function rowNum(r, ...keys){ const v=rowGet(r,...keys); if(v===''||v===null) return 0; return parseIdNum(v); }
 // Parser khusus untuk angka desimal seperti Luas (Ha) — TIDAK menghapus titik desimal seperti rowNum (yang diasumsikan untuk Rupiah/Kg format ribuan).
 // "23.45" -> 23.45 (titik = desimal, dibiarkan apa adanya)
 // "23,45" -> 23.45 (koma = desimal, dikonversi)
