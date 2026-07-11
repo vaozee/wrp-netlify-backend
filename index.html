@@ -738,6 +738,7 @@ body::after{width:480px;height:480px;bottom:-160px;left:200px;background:radial-
   <div class="h-actions">
     <select class="fsl" id="pw-afd" style="width:130px;" onchange="onPwAfdChange()"><option value="">Semua AFD</option></select>
     <select class="fsl" id="pw-blok" style="width:115px;" onchange="renderPerawatan()"><option value="">Semua Blok</option></select>
+    <select class="fsl" id="pw-tahun" style="width:110px;" onchange="renderPerawatan()"><option value="">Semua Tahun</option></select>
     <button class="btn btn-o" onclick="loadPerawatan()"><i class="fas fa-sync-alt"></i> Refresh</button>
     <button class="btn btn-g" onclick="exportCSV(perawatanRows,'perawatan')"><i class="fas fa-file-csv"></i> Export</button>
   </div></div>
@@ -3742,12 +3743,68 @@ function populatePwFilters(rows, histRows, blokRows){
   const bloks = [...new Set(blokSource.map(r=>r.BLOK||r.blok||r.KODE_BLOK||r.kode_blok).filter(Boolean))].sort();
   blokSel.innerHTML = '<option value="">Semua Blok</option>' +
     bloks.map(b=>`<option value="${b}" ${b===curBlok?'selected':''}>${b}</option>`).join('');
+
+  // Tahun — diambil dari kolom TAHUN pada sheet "hist pupuk" (dideteksi otomatis)
+  const tahunSel = document.getElementById('pw-tahun');
+  if(tahunSel){
+    const curTahun = tahunSel.value;
+    const {thnKey} = detectHpCols(histRows);
+    const tahuns = thnKey
+      ? [...new Set(histRows.map(r=>String(r[thnKey]||'').trim()).filter(Boolean))]
+          .sort((a,b)=>b.localeCompare(a, undefined, {numeric:true}))
+      : [];
+    tahunSel.innerHTML = '<option value="">Semua Tahun</option>' +
+      tahuns.map(t=>`<option value="${t}" ${t===curTahun?'selected':''}>${t}</option>`).join('');
+  }
 }
 
 function onPwAfdChange(){
   document.getElementById('pw-blok').value = '';
   populatePwFilters(perawatanRows, histPupukRows, pemupukanBlokRows);
   renderPerawatan();
+}
+
+// Helper: deteksi kolom TAHUN & JENIS_PUPUK dari header aktual (case-insensitive)
+// Dipindah ke scope global supaya bisa dipakai populatePwFilters (isi dropdown Tahun) & renderPerawatan (filter chart)
+function detectHpCols(rows){
+  if(!rows.length) return {thnKey:null,jenisKey:null,realKey:null,rekomKey:null};
+  const keys = Object.keys(rows[0]);
+  const findKey = (...candidates) => {
+    for(const c of candidates){
+      const found = keys.find(k=>k.trim().toUpperCase()===c.toUpperCase());
+      if(found) return found;
+    }
+    for(const c of candidates){
+      const found = keys.find(k=>k.trim().toUpperCase().replace(/[\s_]/g,'').includes(c.toUpperCase().replace(/[\s_]/g,'')));
+      if(found) return found;
+    }
+    return null;
+  };
+  return {
+    thnKey:   findKey('TAHUN','YEAR','PERIODE','TH','YR','TAHUN_PEMUPUKAN'),
+    jenisKey: findKey('JENIS_PUPUK','JENIS PUPUK','JENIS','TYPE_PUPUK','PUPUK','NAMA_PUPUK'),
+    realKey:  findKey('REALISASI_KG','REALISASI KG','REALISASI','REAL_KG','AKTUAL_KG','AKTUAL','REAL'),
+    rekomKey: findKey('REKOM_KG','REKOM KG','REKOM','REKOMENDASI_KG','REKOMENDASI','TARGET_KG','TARGET'),
+  };
+}
+
+// Agregasi hist pupuk — dipindah ke scope global (lihat catatan di atas)
+function buildHpData(rows){
+  const {thnKey,jenisKey,realKey,rekomKey} = detectHpCols(rows);
+  const byTJ = {};
+  rows.forEach(r=>{
+    const thn   = thnKey   ? String(r[thnKey]  ||'—').trim() : '—';
+    const jenis = jenisKey ? String(r[jenisKey]||'?').trim() : '?';
+    const key   = `${thn}|${jenis}`;
+    if(!byTJ[key]) byTJ[key]={thn,jenis,real:0,rekom:0};
+    const parseV = v => parseFloat(String(v||0).replace(/[^\d,.-]/g,'').replace(',','.')) || 0;
+    byTJ[key].real  += realKey  ? parseV(r[realKey])  : 0;
+    byTJ[key].rekom += rekomKey ? parseV(r[rekomKey]) : 0;
+  });
+  const entries = Object.values(byTJ)
+    .filter(e=>e.thn!=='—'||e.jenis!=='?')
+    .sort((a,b)=>String(a.thn).localeCompare(String(b.thn))||a.jenis.localeCompare(b.jenis));
+  return {entries, thnKey, jenisKey, realKey, rekomKey};
 }
 
 // Normalize row key helper (case insensitive)
@@ -3800,15 +3857,21 @@ function renderPerawatan(){
   const el  = document.getElementById('pw-content');
   const afd  = document.getElementById('pw-afd').value;
   const blok = document.getElementById('pw-blok').value;
+  const tahunSelEl = document.getElementById('pw-tahun');
+  const tahun = tahunSelEl ? tahunSelEl.value : '';
 
   // ── Filter perawatan ──
   let pw = perawatanRows;
   if(afd)  pw = pw.filter(r=>rowGet(r,'AFD','afd')===afd);
   if(blok) pw = pw.filter(r=>rowGet(r,'BLOK','blok','KODE_BLOK')===blok);
 
-  // ── Filter hist pupuk berdasar AFD ──
+  // ── Filter hist pupuk berdasar AFD + Tahun ──
   let hp = histPupukRows;
   if(afd) hp = hp.filter(r=>rowGet(r,'AFD','afd')===afd);
+  const hpColsFull = detectHpCols(histPupukRows);
+  if(tahun && hpColsFull.thnKey){
+    hp = hp.filter(r=>String(r[hpColsFull.thnKey]||'').trim()===tahun);
+  }
 
   // ── Filter pemupukan blok ──
   let pb = pemupukanBlokRows;
@@ -3821,50 +3884,6 @@ function renderPerawatan(){
     let d = (v instanceof Date)?v:new Date(v);
     if(isNaN(d.getTime())) return String(v);
     return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-  }
-
-  // Helper: deteksi kolom TAHUN & JENIS_PUPUK dari header aktual (case-insensitive)
-  function detectHpCols(rows){
-    if(!rows.length) return {thnKey:null,jenisKey:null,realKey:null,rekomKey:null};
-    const keys = Object.keys(rows[0]);
-    const findKey = (...candidates) => {
-      for(const c of candidates){
-        // exact match case-insensitive
-        const found = keys.find(k=>k.trim().toUpperCase()===c.toUpperCase());
-        if(found) return found;
-      }
-      for(const c of candidates){
-        // partial match
-        const found = keys.find(k=>k.trim().toUpperCase().replace(/[\s_]/g,'').includes(c.toUpperCase().replace(/[\s_]/g,'')));
-        if(found) return found;
-      }
-      return null;
-    };
-    return {
-      thnKey:   findKey('TAHUN','YEAR','PERIODE','TH','YR','TAHUN_PEMUPUKAN'),
-      jenisKey: findKey('JENIS_PUPUK','JENIS PUPUK','JENIS','TYPE_PUPUK','PUPUK','NAMA_PUPUK'),
-      realKey:  findKey('REALISASI_KG','REALISASI KG','REALISASI','REAL_KG','AKTUAL_KG','AKTUAL','REAL'),
-      rekomKey: findKey('REKOM_KG','REKOM KG','REKOM','REKOMENDASI_KG','REKOMENDASI','TARGET_KG','TARGET'),
-    };
-  }
-
-  // Agregasi hist pupuk
-  function buildHpData(rows){
-    const {thnKey,jenisKey,realKey,rekomKey} = detectHpCols(rows);
-    const byTJ = {};
-    rows.forEach(r=>{
-      const thn   = thnKey   ? String(r[thnKey]  ||'—').trim() : '—';
-      const jenis = jenisKey ? String(r[jenisKey]||'?').trim() : '?';
-      const key   = `${thn}|${jenis}`;
-      if(!byTJ[key]) byTJ[key]={thn,jenis,real:0,rekom:0};
-      const parseV = v => parseFloat(String(v||0).replace(/[^\d,.-]/g,'').replace(',','.')) || 0;
-      byTJ[key].real  += realKey  ? parseV(r[realKey])  : 0;
-      byTJ[key].rekom += rekomKey ? parseV(r[rekomKey]) : 0;
-    });
-    const entries = Object.values(byTJ)
-      .filter(e=>e.thn!=='—'||e.jenis!=='?')
-      .sort((a,b)=>String(a.thn).localeCompare(String(b.thn))||a.jenis.localeCompare(b.jenis));
-    return {entries, thnKey, jenisKey, realKey, rekomKey};
   }
 
   let html = `<div class="pbar"><div class="pbar-l"><i class="fas fa-leaf"></i><div>
@@ -3924,7 +3943,7 @@ function renderPerawatan(){
 
   // ── CHART HIST PUPUK — combo balok+garis, semua tahun × jenis ──
   html += `<div class="dvd" style="margin:18px 0;"></div>
-    <div class="slbl"><i class="fas fa-seedling"></i> Realisasi & Rekomendasi Pupuk — Semua Tahun${afd?' · AFD '+afd:''}</div>`;
+    <div class="slbl"><i class="fas fa-seedling"></i> Realisasi & Rekomendasi Pupuk — ${tahun?'Tahun '+escHtml(tahun):'Semua Tahun'}${afd?' · AFD '+afd:''}</div>`;
 
   if(hp.length){
     const {entries,thnKey,jenisKey,realKey,rekomKey} = buildHpData(hp);
@@ -3951,7 +3970,7 @@ function renderPerawatan(){
       </div></div>
     </div>
     <div class="cc" style="margin-bottom:14px;">
-      <div class="cc-t"><i class="fas fa-chart-bar"></i> Realisasi <span style="color:var(--G)">(balok)</span> vs Rekom KG <span style="color:var(--Au)">(garis)</span> per Tahun &amp; Jenis</div>
+      <div class="cc-t"><i class="fas fa-chart-bar"></i> Realisasi <span style="color:var(--G)">(balok)</span> vs Rekom KG <span style="color:var(--Au)">(garis)</span> ${tahun?'per Jenis — Tahun '+escHtml(tahun):'per Tahun &amp; Jenis'}</div>
       <div style="font-size:0.673rem;opacity:.4;padding:2px 16px 4px;color:var(--TL);">Kolom terdeteksi: ${escHtml(colInfo)}</div>
       <div id="ch-pupuk-jenis"></div>
     </div>`;
@@ -4022,7 +4041,7 @@ function renderPerawatan(){
         stroke:{width:[0,3], curve:'smooth', dashArray:[0,5]},
         plotOptions:{bar:{borderRadius:4, columnWidth:'60%'}},
         markers:{size:[0,4], colors:[G,Au], strokeColors:['transparent',Au], strokeWidth:2},
-        xaxis:{...xA(entries.map(e=>`${e.thn} · ${e.jenis}`)),
+        xaxis:{...xA(entries.map(e=>tahun?e.jenis:`${e.thn} · ${e.jenis}`)),
           labels:{rotate:-45, rotateAlways:entries.length>6,
             style:{colors:Array(entries.length).fill(TL), fontSize:'10px'}}
         },
