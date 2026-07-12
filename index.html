@@ -3522,7 +3522,7 @@ const IMPORT_SHEETS_FALLBACK = [
   { sheet:'PksHarian', columns:['TANGGAL','TAHUN','BULAN','KEGIATAN','SER','DATA','SAT','ACTUAL','BUDGET'] },
   { sheet:'Perawatan', columns:['KBN','AFD','BLOK','TANAM','TAHUN_TANAM','JENIS_TANAH','LUAS','PKK','SPH','ROT_TERAKHIR_GAWANGAN_CHEMIST','ROTTERAKHIR_GAWANGAN_MANUAL','ROT_TERAKHIR_PIRINGAN_CHEMIST','ROT_TERAKHIR_PIRINGAN_MANUAL'] },
   { sheet:'HistPupuk', columns:['KEBUN','AFD','BLOK','REKOM_(KG)','REALISASI_(KG)','VARIANT_(%)','TAHUN'] },
-  { sheet:'PemupukanBlok', columns:['KEBUN','AFD','BLOK','TT','JENIS_TANAH','PROGENI','LUAS_(HA)','POPULASI','SPH','JENIS_PUPUK','KG_PER_POKOK','REKOM_TOTAL_KG','KG/_ROTASI_1','KG/_ROTASI_2','KG/_ROTASI_3','KG/_ROTASI_4','REALISASI_KG_2026','REALISASI_HA_2026','REALISASI_KG_2025','REALISASI_HA_2025','REALISASI_KG_2024','REALISASI_HA_2024'] }
+  { sheet:'PemupukanBlok', columns:['KEBUN','AFD','BLOK','TT','JENIS_TANAH','PROGENI','LUAS_(HA)','POPULASI','SPH','JENIS_PUPUK','KG_PER_POKOK','REKOM_TOTAL_KG','KG/_ROTASI_1','KG/_ROTASI_2','KG/_ROTASI_3','KG/_ROTASI_4','REALISASI_KG_THI','REALISASI_HA_THI'] }
 ];
 
 async function loadImportableSheets(){
@@ -3853,6 +3853,17 @@ async function loadPerawatan(){
   }
 }
 
+function togglePbAfdTable(){
+  const wrap = document.getElementById('pb-afd-table-wrap');
+  const tgl = document.getElementById('pb-afd-toggle');
+  if(!wrap||!tgl) return;
+  const showing = wrap.style.display !== 'none';
+  wrap.style.display = showing ? 'none' : 'block';
+  tgl.innerHTML = showing
+    ? '<i class="fas fa-chevron-right"></i> <i class="fas fa-table-list"></i> Ringkasan Pemupukan per AFD — klik untuk tampilkan'
+    : '<i class="fas fa-chevron-down"></i> <i class="fas fa-table-list"></i> Ringkasan Pemupukan per AFD — klik untuk sembunyikan';
+}
+
 function renderPerawatan(){
   const el  = document.getElementById('pw-content');
   const afd  = document.getElementById('pw-afd').value;
@@ -3941,22 +3952,54 @@ function renderPerawatan(){
       </tbody></table></div></div>`;
   }
 
-  // ── CHART HIST PUPUK — combo balok+garis, semua tahun × jenis ──
+  // ── CHART & KOTAK PEMUPUKAN — sumber: sheet "pemupukan blok" ──
   html += `<div class="dvd" style="margin:18px 0;"></div>
-    <div class="slbl"><i class="fas fa-seedling"></i> Realisasi & Rekomendasi Pupuk — ${tahun?'Tahun '+escHtml(tahun):'Semua Tahun'}${afd?' · AFD '+afd:''}</div>`;
+    <div class="slbl"><i class="fas fa-seedling"></i> Realisasi & Rekomendasi Pupuk — Pemupukan Blok${afd?' · AFD '+afd:''}${blok?' · Blok '+blok:''}</div>`;
 
-  if(hp.length){
-    const {entries,thnKey,jenisKey,realKey,rekomKey} = buildHpData(hp);
-    const totReal  = entries.reduce((s,e)=>s+e.real,0);
-    const totRekom = entries.reduce((s,e)=>s+e.rekom,0);
+  if(pb.length){
+    const byJenisPb = {};
+    pb.forEach(r=>{
+      const j = rowGet(r,'JENIS_PUPUK','jenis_pupuk','JENIS','jenis')||'Unknown';
+      if(!byJenisPb[j]) byJenisPb[j]={rekom:0,realThi:0,luas:0,populasi:0,rot1:0,rot2:0,rot3:0};
+      byJenisPb[j].rekom    += rowNum(r,'REKOM_TOTAL_KG','rekom_total_kg','REKOM_TOTAL','rekom_total');
+      byJenisPb[j].realThi  += rowNum(r,'REALISASI_KG_THI','realisasi_kg_thi');
+      byJenisPb[j].luas     += rowNumDec(r,'LUAS_(HA)','LUAS_HA','LUAS (HA)','LUAS','luas_(ha)','luas_ha','luas');
+      byJenisPb[j].populasi += rowNum(r,'POPULASI','populasi');
+      byJenisPb[j].rot1     += rowNum(r,'KG/_ROTASI_1','KG_ROTASI_1','KG/ROTASI_1','kg/_rotasi_1','rotasi_1');
+      byJenisPb[j].rot2     += rowNum(r,'KG/_ROTASI_2','KG_ROTASI_2','KG/ROTASI_2','kg/_rotasi_2','rotasi_2');
+      byJenisPb[j].rot3     += rowNum(r,'KG/_ROTASI_3','KG_ROTASI_3','KG/ROTASI_3','kg/_rotasi_3','rotasi_3');
+    });
+    const pbList = Object.entries(byJenisPb);
+    const totReal  = pbList.reduce((s,[,v])=>s+v.realThi,0);
+    const totRekom = pbList.reduce((s,[,v])=>s+v.rekom,0);
     const ach = totRekom>0?(totReal/totRekom*100):0;
-    const colInfo = `TAHUN:${thnKey||'tdk ditemukan'} · JENIS:${jenisKey||'tdk ditemukan'} · REAL:${realKey||'tdk ditemukan'} · REKOM:${rekomKey||'tdk ditemukan'}`;
+
+    const byAfdPb = {};
+    // Luas & Populasi per AFD diambil dari total salah satu jenis pupuk saja (bukan first-row / bukan dijumlah semua jenis),
+    // supaya tidak double-count karena tiap blok punya baris terpisah untuk tiap jenis pupuk.
+    const jenisKeysPb = Object.keys(byJenisPb);
+    const refJenisPb = jenisKeysPb.find(k=>/npk.*13\.?6\.?27\.?4/i.test(k)) || jenisKeysPb[0];
+    pb.forEach(r=>{
+      const a = rowGet(r,'AFD','afd')||'(Tanpa AFD)';
+      if(!byAfdPb[a]) byAfdPb[a]={rekom:0,realThi:0,luas:0,populasi:0,rot1:0,rot2:0,rot3:0};
+      const j = rowGet(r,'JENIS_PUPUK','jenis_pupuk','JENIS','jenis')||'Unknown';
+      byAfdPb[a].rekom    += rowNum(r,'REKOM_TOTAL_KG','rekom_total_kg','REKOM_TOTAL','rekom_total');
+      byAfdPb[a].realThi  += rowNum(r,'REALISASI_KG_THI','realisasi_kg_thi');
+      if(j===refJenisPb){
+        byAfdPb[a].luas     += rowNumDec(r,'LUAS_(HA)','LUAS_HA','LUAS (HA)','LUAS','luas_(ha)','luas_ha','luas');
+        byAfdPb[a].populasi += rowNum(r,'POPULASI','populasi');
+      }
+      byAfdPb[a].rot1     += rowNum(r,'KG/_ROTASI_1','KG_ROTASI_1','KG/ROTASI_1','kg/_rotasi_1','rotasi_1');
+      byAfdPb[a].rot2     += rowNum(r,'KG/_ROTASI_2','KG_ROTASI_2','KG/ROTASI_2','kg/_rotasi_2','rotasi_2');
+      byAfdPb[a].rot3     += rowNum(r,'KG/_ROTASI_3','KG_ROTASI_3','KG/ROTASI_3','kg/_rotasi_3','rotasi_3');
+    });
+    const byAfdList = Object.entries(byAfdPb);
 
     html += `<div class="kg3" style="margin-bottom:12px;">
       <div class="kc fx"><div class="kico g"><i class="fas fa-flask"></i></div><div>
         <div class="klbl">Total Realisasi Pupuk</div>
         <div class="kvl">${Math.round(totReal).toLocaleString('id-ID')} Kg</div>
-        <div class="ksub">${[...new Set(entries.map(e=>e.jenis))].length} jenis · ${[...new Set(entries.map(e=>e.thn))].length} tahun</div>
+        <div class="ksub">${pbList.length} jenis</div>
       </div></div>
       <div class="kc fx"><div class="kico au"><i class="fas fa-bullseye"></i></div><div>
         <div class="klbl">Total Rekomendasi</div>
@@ -3970,41 +4013,15 @@ function renderPerawatan(){
       </div></div>
     </div>
     <div class="cc" style="margin-bottom:14px;">
-      <div class="cc-t"><i class="fas fa-chart-bar"></i> Realisasi <span style="color:var(--G)">(balok)</span> vs Rekom KG <span style="color:var(--Au)">(garis)</span> ${tahun?'per Jenis — Tahun '+escHtml(tahun):'per Tahun &amp; Jenis'}</div>
-      <div style="font-size:0.673rem;opacity:.4;padding:2px 16px 4px;color:var(--TL);">Kolom terdeteksi: ${escHtml(colInfo)}</div>
+      <div class="cc-t"><i class="fas fa-chart-bar"></i> Realisasi <span style="color:var(--G)">(balok)</span> vs Rekom KG <span style="color:var(--Au)">(garis)</span> per Jenis Pupuk</div>
       <div id="ch-pupuk-jenis"></div>
-    </div>`;
-  } else {
-    html += `<div class="cc"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data Hist Pupuk${afd?' untuk AFD '+escHtml(afd):''} di sheet "hist pupuk".</div></div>`;
-  }
-
-  // ── CHART PEMUPUKAN BLOK ──
-  html += `<div class="dvd" style="margin:18px 0;"></div>
-    <div class="slbl"><i class="fas fa-map-marked-alt"></i> Pemupukan Blok — Rekom vs Realisasi Multi-Tahun</div>`;
-
-  if(pb.length){
-    const byJenisPb = {};
-    pb.forEach(r=>{
-      const j = rowGet(r,'JENIS_PUPUK','jenis_pupuk','JENIS','jenis')||'Unknown';
-      if(!byJenisPb[j]) byJenisPb[j]={rekom:0,real2026:0,real2025:0,real2024:0,luas:0,populasi:0,rot1:0,rot2:0,rot3:0};
-      byJenisPb[j].rekom    += rowNum(r,'REKOM_TOTAL_KG','rekom_total_kg','REKOM_TOTAL','rekom_total');
-      byJenisPb[j].real2026 += rowNum(r,'REALISASI_KG_2026','realisasi_kg_2026');
-      byJenisPb[j].real2025 += rowNum(r,'REALISASI_KG_2025','realisasi_kg_2025');
-      byJenisPb[j].real2024 += rowNum(r,'REALISASI_KG_2024','realisasi_kg_2024');
-      byJenisPb[j].luas     += rowNumDec(r,'LUAS_(HA)','LUAS_HA','LUAS (HA)','LUAS','luas_(ha)','luas_ha','luas');
-      byJenisPb[j].populasi += rowNum(r,'POPULASI','populasi');
-      byJenisPb[j].rot1     += rowNum(r,'KG/_ROTASI_1','KG_ROTASI_1','KG/ROTASI_1','kg/_rotasi_1','rotasi_1');
-      byJenisPb[j].rot2     += rowNum(r,'KG/_ROTASI_2','KG_ROTASI_2','KG/ROTASI_2','kg/_rotasi_2','rotasi_2');
-      byJenisPb[j].rot3     += rowNum(r,'KG/_ROTASI_3','KG_ROTASI_3','KG/ROTASI_3','kg/_rotasi_3','rotasi_3');
-    });
-    const pbList = Object.entries(byJenisPb);
-    html += `<div class="cc" style="margin-bottom:14px;"><div class="cc-t"><i class="fas fa-chart-column"></i> Rekom Total vs Realisasi 2024/2025/2026 per Jenis Pupuk</div><div id="ch-pupuk-blok"></div></div>
+    </div>
     <div class="cc"><div class="cc-t"><span class="l"><i class="fas fa-table-list"></i> Tabel Pemupukan Blok per Jenis</span></div>
       <div class="tw" style="max-height:300px;"><table class="tbl"><thead><tr>
-        <th>Luas (Ha)</th><th>Populasi</th><th>Jenis Pupuk</th><th>Rekom Total (Kg)</th><th>Kg/Rotasi 1</th><th>Kg/Rotasi 2</th><th>Kg/Rotasi 3</th><th>Realisasi 2026</th><th>Ach 2026 (%)</th><th>Realisasi 2025</th><th>Realisasi 2024</th>
+        <th>Luas (Ha)</th><th>Populasi</th><th>Jenis Pupuk</th><th>Rekom Total (Kg)</th><th>Kg/Rotasi 1</th><th>Kg/Rotasi 2</th><th>Kg/Rotasi 3</th><th>Realisasi THI</th><th>Ach THI (%)</th>
       </tr></thead><tbody>
       ${pbList.map(([j,v])=>{
-        const a26=v.rekom>0?(v.real2026/v.rekom*100):0;
+        const aThi=v.rekom>0?(v.realThi/v.rekom*100):0;
         return `<tr>
           <td>${v.luas?v.luas.toLocaleString('id-ID',{maximumFractionDigits:2}):'-'}</td>
           <td>${v.populasi?Math.round(v.populasi).toLocaleString('id-ID'):'-'}</td>
@@ -4013,37 +4030,79 @@ function renderPerawatan(){
           <td>${Math.round(v.rot1).toLocaleString('id-ID')}</td>
           <td>${Math.round(v.rot2).toLocaleString('id-ID')}</td>
           <td>${Math.round(v.rot3).toLocaleString('id-ID')}</td>
-          <td>${Math.round(v.real2026).toLocaleString('id-ID')}</td>
-          <td class="${a26>=95?'g':a26>=80?'wd':'bd'}">${a26.toFixed(1)}%</td>
-          <td>${Math.round(v.real2025).toLocaleString('id-ID')}</td>
-          <td>${Math.round(v.real2024).toLocaleString('id-ID')}</td></tr>`;
+          <td>${Math.round(v.realThi).toLocaleString('id-ID')}</td>
+          <td class="${aThi>=95?'g':aThi>=80?'wd':'bd'}">${aThi.toFixed(1)}%</td></tr>`;
       }).join('')}
-      </tbody></table></div></div>`;
+      </tbody></table></div>
+      <div class="cc-t" style="border-top:1px solid var(--BD);margin-top:2px;">
+        <span class="collapse-toggle" id="pb-afd-toggle" onclick="togglePbAfdTable()"><i class="fas fa-chevron-right"></i> <i class="fas fa-table-list"></i> Ringkasan Pemupukan per AFD — klik untuk tampilkan</span>
+      </div>
+      <div id="pb-afd-table-wrap" style="display:none;">
+        <div class="tw" style="max-height:300px;"><table class="tbl"><thead><tr>
+          <th>Luas (Ha)</th><th>Populasi</th><th>AFD</th><th>Rekom Total (Kg)</th><th>Kg/Rotasi 1</th><th>Kg/Rotasi 2</th><th>Kg/Rotasi 3</th><th>Realisasi THI</th><th>Ach THI (%)</th>
+        </tr></thead><tbody>
+        ${byAfdList.map(([a,v])=>{
+          const aThiA=v.rekom>0?(v.realThi/v.rekom*100):0;
+          return `<tr>
+            <td>${v.luas?v.luas.toLocaleString('id-ID',{maximumFractionDigits:2}):'-'}</td>
+            <td>${v.populasi?Math.round(v.populasi).toLocaleString('id-ID'):'-'}</td>
+            <td><b>${escHtml(a)}</b></td>
+            <td>${Math.round(v.rekom).toLocaleString('id-ID')}</td>
+            <td>${Math.round(v.rot1).toLocaleString('id-ID')}</td>
+            <td>${Math.round(v.rot2).toLocaleString('id-ID')}</td>
+            <td>${Math.round(v.rot3).toLocaleString('id-ID')}</td>
+            <td>${Math.round(v.realThi).toLocaleString('id-ID')}</td>
+            <td class="${aThiA>=95?'g':aThiA>=80?'wd':'bd'}">${aThiA.toFixed(1)}%</td></tr>`;
+        }).join('')}
+        </tbody></table></div>
+      </div>
+    </div>`;
   } else {
-    html += `<div class="cc"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data Pemupukan Blok untuk filter ini.</div></div>`;
+    html += `<div class="cc"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data Pemupukan Blok${afd?' untuk AFD '+escHtml(afd):''} di sheet "pemupukan blok".</div></div>`;
+  }
+
+  // ── CHART HIST PUPUK — combo balok+garis, semua tahun × jenis (paling bawah) ──
+  html += `<div class="dvd" style="margin:18px 0;"></div>`;
+  if(hp.length){
+    const {thnKey,jenisKey,realKey,rekomKey} = buildHpData(hp);
+    const colInfo = `TAHUN:${thnKey||'tdk ditemukan'} · JENIS:${jenisKey||'tdk ditemukan'} · REAL:${realKey||'tdk ditemukan'} · REKOM:${rekomKey||'tdk ditemukan'}`;
+    html += `<div class="cc" style="margin-bottom:14px;">
+      <div class="cc-t"><i class="fas fa-chart-bar"></i> Realisasi <span style="color:var(--G)">(balok)</span> vs Rekom KG <span style="color:var(--Au)">(garis)</span> per Tahun &amp; Jenis</div>
+      <div style="font-size:0.673rem;opacity:.4;padding:2px 16px 4px;color:var(--TL);">Kolom terdeteksi: ${escHtml(colInfo)}</div>
+      <div id="ch-pupuk-tahun-jenis"></div>
+    </div>`;
+  } else {
+    html += `<div class="cc"><div class="empty-state"><i class="fas fa-folder-open"></i>Belum ada data Hist Pupuk${afd?' untuk AFD '+escHtml(afd):''} di sheet "hist pupuk".</div></div>`;
   }
 
   el.innerHTML = html;
 
-  // ── Render Chart Hist Pupuk (combo bar+line) ──
-  if(hp.length){
-    const {entries} = buildHpData(hp);
+  // ── Render Chart Pemupukan (combo bar+line, sumber: sheet "pemupukan blok") ──
+  if(pb.length){
+    const byJenisPb = {};
+    pb.forEach(r=>{
+      const j=rowGet(r,'JENIS_PUPUK','jenis_pupuk','JENIS','jenis')||'Unknown';
+      if(!byJenisPb[j]) byJenisPb[j]={rekom:0,realThi:0};
+      byJenisPb[j].rekom    += rowNum(r,'REKOM_TOTAL_KG','rekom_total_kg','REKOM_TOTAL','rekom_total');
+      byJenisPb[j].realThi  += rowNum(r,'REALISASI_KG_THI','realisasi_kg_thi');
+    });
+    const pbList = Object.entries(byJenisPb);
     const chEl = document.getElementById('ch-pupuk-jenis');
-    if(chEl && entries.length){
-      const chartH = Math.max(280, Math.min(500, 180 + entries.length*15));
+    if(chEl && pbList.length){
+      const chartH = Math.max(280, Math.min(500, 180 + pbList.length*15));
       new ApexCharts(chEl,{
         chart:{...bC, type:'bar', height:chartH, stacked:false},
         series:[
-          {name:'Realisasi (Kg)', type:'bar',  data:entries.map(e=>Math.round(e.real))},
-          {name:'Rekom (Kg)',     type:'line', data:entries.map(e=>Math.round(e.rekom))}
+          {name:'Realisasi (Kg)', type:'bar',  data:pbList.map(([,v])=>Math.round(v.realThi))},
+          {name:'Rekom (Kg)',     type:'line', data:pbList.map(([,v])=>Math.round(v.rekom))}
         ],
         dataLabels:{enabled:false},
         stroke:{width:[0,3], curve:'smooth', dashArray:[0,5]},
         plotOptions:{bar:{borderRadius:4, columnWidth:'60%'}},
         markers:{size:[0,4], colors:[G,Au], strokeColors:['transparent',Au], strokeWidth:2},
-        xaxis:{...xA(entries.map(e=>tahun?e.jenis:`${e.thn} · ${e.jenis}`)),
-          labels:{rotate:-45, rotateAlways:entries.length>6,
-            style:{colors:Array(entries.length).fill(TL), fontSize:'10px'}}
+        xaxis:{...xA(pbList.map(([j])=>j)),
+          labels:{rotate:-45, rotateAlways:pbList.length>6,
+            style:{colors:Array(pbList.length).fill(TL), fontSize:'10px'}}
         },
         yaxis:yA(v=>(v/1000).toFixed(0)+'K Kg'),
         colors:[G, Au],
@@ -4054,35 +4113,31 @@ function renderPerawatan(){
     }
   }
 
-  // ── Render Chart Pemupukan Blok ──
-  if(pb.length){
-    const byJenisPb = {};
-    pb.forEach(r=>{
-      const j=rowGet(r,'JENIS_PUPUK','jenis_pupuk','JENIS','jenis')||'Unknown';
-      if(!byJenisPb[j]) byJenisPb[j]={rekom:0,real2026:0,real2025:0,real2024:0};
-      byJenisPb[j].rekom    += rowNum(r,'REKOM_TOTAL_KG','rekom_total_kg','REKOM_TOTAL','rekom_total');
-      byJenisPb[j].real2026 += rowNum(r,'REALISASI_KG_2026','realisasi_kg_2026');
-      byJenisPb[j].real2025 += rowNum(r,'REALISASI_KG_2025','realisasi_kg_2025');
-      byJenisPb[j].real2024 += rowNum(r,'REALISASI_KG_2024','realisasi_kg_2024');
-    });
-    const pbList=Object.entries(byJenisPb);
-    const chBlokEl=document.getElementById('ch-pupuk-blok');
-    if(chBlokEl){
-      new ApexCharts(chBlokEl,{
-        chart:{...bC,type:'bar',height:280},
+  // ── Render Chart Hist Pupuk per Tahun & Jenis (paling bawah) ──
+  if(hp.length){
+    const {entries} = buildHpData(hp);
+    const chHistEl = document.getElementById('ch-pupuk-tahun-jenis');
+    if(chHistEl && entries.length){
+      const chartH = Math.max(280, Math.min(500, 180 + entries.length*15));
+      new ApexCharts(chHistEl,{
+        chart:{...bC, type:'bar', height:chartH, stacked:false},
         series:[
-          {name:'Rekom Total',    data:pbList.map(([,v])=>Math.round(v.rekom))},
-          {name:'Realisasi 2026', data:pbList.map(([,v])=>Math.round(v.real2026))},
-          {name:'Realisasi 2025', data:pbList.map(([,v])=>Math.round(v.real2025))},
-          {name:'Realisasi 2024', data:pbList.map(([,v])=>Math.round(v.real2024))}
+          {name:'Realisasi (Kg)', type:'bar',  data:entries.map(e=>Math.round(e.real))},
+          {name:'Rekom (Kg)',     type:'line', data:entries.map(e=>Math.round(e.rekom))}
         ],
         dataLabels:{enabled:false},
-        plotOptions:{bar:{borderRadius:3,columnWidth:'75%',grouped:true}},
-        xaxis:xA(pbList.map(([j])=>j)),
+        stroke:{width:[0,3], curve:'smooth', dashArray:[0,5]},
+        plotOptions:{bar:{borderRadius:4, columnWidth:'60%'}},
+        markers:{size:[0,4], colors:[G,Au], strokeColors:['transparent',Au], strokeWidth:2},
+        xaxis:{...xA(entries.map(e=>`${e.thn} · ${e.jenis}`)),
+          labels:{rotate:-45, rotateAlways:entries.length>6,
+            style:{colors:Array(entries.length).fill(TL), fontSize:'10px'}}
+        },
         yaxis:yA(v=>(v/1000).toFixed(0)+'K Kg'),
-        colors:[`rgba(${AuRGB},.6)`,G,BL,Y],
-        tooltip:{theme:'dark',y:{formatter:v=>v.toLocaleString('id-ID')+' Kg'}},
-        grid,legend:{labels:{colors:TL},position:'top'}
+        colors:[G, Au],
+        fill:{opacity:[0.88,1]},
+        tooltip:{theme:'dark', shared:true, intersect:false, y:{formatter:v=>v.toLocaleString('id-ID')+' Kg'}},
+        grid, legend:{labels:{colors:TL}, position:'top'}
       }).render();
     }
   }
@@ -4644,8 +4699,8 @@ function openPetaBlokDetail(code){
   // ── Rekomendasi & Realisasi Pemupukan per jenis pupuk (sheet Pemupukan Blok) ──
   html += `<div class="pm-detail-sec"><h4><i class="fas fa-vial"></i> Rekomendasi &amp; Realisasi Pemupukan</h4>`;
   if(pupuk.length){
-    html += `<div class="tw" style="max-height:220px;"><table class="tbl"><thead><tr><th>Jenis Pupuk</th><th>Kg/Pokok</th><th>Rekom Total (Kg)</th><th>Real 2026 (Kg)</th><th>Real 2025 (Kg)</th><th>Real 2024 (Kg)</th></tr></thead><tbody>
-    ${pupuk.map(r=>`<tr><td>${escHtml(String(rowGet(r,'JENIS_PUPUK')||''))}</td><td>${rowNum(r,'KG_PER_POKOK').toLocaleString('id-ID',{maximumFractionDigits:3})}</td><td>${rowNum(r,'REKOM_TOTAL_KG').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_KG_2026').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_KG_2025').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_KG_2024').toLocaleString('id-ID')}</td></tr>`).join('')}
+    html += `<div class="tw" style="max-height:220px;"><table class="tbl"><thead><tr><th>Jenis Pupuk</th><th>Kg/Pokok</th><th>Rekom Total (Kg)</th><th>Real THI (Kg)</th></tr></thead><tbody>
+    ${pupuk.map(r=>`<tr><td>${escHtml(String(rowGet(r,'JENIS_PUPUK')||''))}</td><td>${rowNum(r,'KG_PER_POKOK').toLocaleString('id-ID',{maximumFractionDigits:3})}</td><td>${rowNum(r,'REKOM_TOTAL_KG').toLocaleString('id-ID')}</td><td>${rowNum(r,'REALISASI_KG_THI','realisasi_kg_thi').toLocaleString('id-ID')}</td></tr>`).join('')}
     </tbody></table></div>`;
   } else {
     html += `<div class="empty-state" style="padding:14px;"><i class="fas fa-folder-open"></i>Belum ada data rekomendasi pemupukan.</div>`;
